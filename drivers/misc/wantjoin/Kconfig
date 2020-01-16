@@ -1,0 +1,13 @@
+#mahui01@wind-mobi.com 2018/9/17 add for lenovo CSDK begin
+
+menu	"Wantjoin software Configuration"
+
+config WANTJOIN_FIREWALL
+	tristate "wantjoin co. ltd firewall core"
+	depends on NETFILTER
+	default n
+	help
+	  A firewall module. Say Y when you want to support this tool.
+
+endmenu
+#mahui01@wind-mobi.com 2018/9/17 add for lenovo CSDK end

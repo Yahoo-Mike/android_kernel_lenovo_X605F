@@ -1,0 +1,66 @@
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+qcom,itech-3000mah {
+	/* #Itech_B00826LF_3000mAh_Feb24th_Averaged*/
+	/*zhangchao@wind-mobi.com 20180301 begin*/
+	qcom,max-voltage-uv = <4400000>;
+	qcom,nom-batt-capacity-mah = <7000>;
+	qcom,v-cutoff-uv = <3400000>;
+	qcom,chg-term-ua = <200000>;
+	qcom,batt-id-kohm = <100>;
+	qcom,battery-beta = <3380>;
+	qcom,battery-type = "itech_3000mah";
+	qcom,chg-rslow-comp-c1 = <2982116>;
+	qcom,chg-rslow-comp-c2 = <3696905>;
+	qcom,chg-rs-to-rslow = <586997>;
+	qcom,chg-rslow-comp-thr = <0x99>;
+	qcom,fastchg-current-ma = <2400>;
+	qcom,fg-cc-cv-threshold-mv = <4390>;
+	qcom,checksum = <0x228B>;
+	qcom,gui-version = "PMI8950GUI - 2.0.0.16";
+	/*zhangchao@wind-mobi.com 20180301 end*/
+	qcom,fg-profile-data = [
+		 F9 83 50 7D 
+		 2B 81 ED 76 
+		 3E 83 BF 72 
+		 E7 7E F0 7B 
+		 24 82 9F 9A 
+		 3D BE 06 D0 
+		 80 10 F5 83 
+		 13 7D 29 81 
+		 46 77 30 83 
+		 3F 7A 5A 8C 
+		 C1 88 23 82 
+		 DC 9B 75 C4 
+		 01 D3 68 0D 
+		 B8 1B D4 58 
+		 14 70 A0 FA 
+		 C3 3F 27 44 
+		 FE 42 00 00 
+		 0E 4C 1A 3B 
+		 DE 33 00 00 
+		 00 00 00 00 
+		 00 00 00 00 
+		 49 69 46 68 
+		 C6 78 09 90 
+		 AA 77 1A 70 
+		 3E 5E 4C 80 
+		 9A 75 15 69 
+		 EF 6D 3F A8 
+		 20 2F 60 47 
+		 5D A0 71 0C 
+		 28 00 FF 36 
+		 F0 11 30 03 
+		 00 00 00 0C 
+	];
+};

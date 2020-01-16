@@ -1,0 +1,446 @@
+/*
+ * Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "msm8953-pinctrl.dtsi"
+#include "msm8953-audio-mtp.dtsi"
+/* caisijing@wind-mobi.com 20180308 start */
+#include "msm8953-fpc.dtsi"
+/* caisijing@wind-mobi.com 20180308 end */
+
+&spi_3 { /* BLSP1 QUP3 */
+	spi-max-frequency = <16000000>;
+	maxim_sti@0 {
+		status = "disabled";
+		compatible = "maxim,maxim_sti";
+		reg = <0>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <65 0>;
+		spi-max-frequency = <16000000>;
+		avdd-supply = <&pm8953_l10>;
+		dvdd-supply = <&pm8953_l5>;
+		maxim_sti,irq-gpio = <&tlmm 65 0x00>;
+		maxim_sti,reset-gpio = <&tlmm 64 0x00>;
+		maxim_sti,touch_fusion = "/vendor/bin/touch_fusion";
+		maxim_sti,config_file = "/etc/firmware/qtc800s.cfg";
+		maxim_sti,fw_name = "qtc800s.bin";
+		pinctrl-names = "pmx_ts_active","pmx_ts_suspend",
+						"pmx_ts_release";
+		pinctrl-0 = <&ts_int_active &ts_reset_active>;
+		pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+		pinctrl-2 = <&ts_release>;
+	};
+};
+/* fengnan@wind-mobi.com add 20180614 begin */
+&i2c_5 { /* BLSP2 QUP0*/
+	Semtech_sx9310@28 {
+		compatible = "Semtech,sx9310";
+		reg = <0x28>;		
+		qcom,nq-irq = <&tlmm 131 0x00>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <131 0>;
+		interrupt-names = "sx_irq";
+		pinctrl-names = "nirq_gpio";
+		pinctrl-0 = <&nirq_gpio_default>;
+		Semtech,nirq-gpio = <&tlmm 131 0x00>;
+		Semtech,reg-num	= <25>; /*total register number to initialize*/
+        Semtech,reg-init  = /bits/ 8 < 0x11 0x00
+                                0x12 0x04
+                                0x13 0x0A
+                                0x14 0x0D
+                                0x15 0xC1
+                                0x16 0x20
+                                0x17 0x4C
+                                0x18 0x7E
+                                0x19 0x7D 
+                                0x1A 0x00
+                                0x1B 0x00
+                                0x1C 0x00
+                                0x1D 0x00
+                                0x1E 0x00
+                                0x1F 0x00
+                                0x20 0x00
+                                0x21 0x04
+                                0x22 0x00
+                                0x23 0x00
+                                0x2A 0x00
+                                0x2B 0x80
+                                0x2C 0x0C
+                                0x03 0x60
+                                0x04 0x00
+                                0x10 0x27>;
+	};
+	abov_t316@20 {
+		compatible = "abov,sxT316";
+		reg = <0x20>;		
+		qcom,nq-irq = <&tlmm 131 0x08>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <131 0x08>;
+		interrupt-names = "abov_irq";
+		pinctrl-names = "nirq_gpio";
+		pinctrl-0 = <&nirq_gpio_default>;
+		above,irq-gpio = <&tlmm 131 0x08>;
+	};
+/* fengnan@wind-mobi.com add 20180614 end */
+};
+
+/* fengnan@wind-mobi.com add 20180614 begin */
+&i2c_8 { /* BLSP2 QUP3*/
+	Semtech_sx9320@28 {
+		compatible = "Semtech,sx9320";
+		reg = <0x28>;
+		qcom,nq-irq = <&tlmm 97 0x00>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <97 0>;
+		interrupt-names = "sx_irq";
+		pinctrl-names = "nirq_gpio2";
+		pinctrl-0 = <&nirq_gpio_default2>;
+		Semtech,nirq-gpio = <&tlmm 97 0x00>;
+		Semtech,reg-num	= <46>; /*total register number to initialize*/
+        Semtech,reg-init  = /bits/ 8 < 0x10 0x16
+                                0x20 0x80
+                                0x23 0x01
+                                0x24 0x44
+                                0x26 0x01
+                                0x27 0x44
+                                0x28 0x00 /*PH0 to CS0 input*/
+                                0x29 0x26
+                                0x2A 0x10 /*PH2 CS2-input,CS1-dync,CS0-HZ*/
+                                0x2B 0x00
+                                0x2C 0x12
+                                0x2D 0x08
+                                0x30 0x09
+                                0x31 0x0a
+                                0x32 0x20
+                                0x33 0x60
+                                0x34 0x0C
+                                0x35 0x15
+                                0x36 0x1B
+                                0x37 0x3c
+                                0x40 0x00
+                                0x41 0x00
+                                0x42 0x00
+                                0x43 0x00
+                                0x44 0x00
+                                0x45 0x05
+                                0x46 0x00
+                                0x47 0x00
+                                0x48 0x00
+                                0x49 0x00
+                                0x4A 0x00
+                                0x4B 0x00
+                                0x4C 0x00
+                                0x4D 0x00
+                                0x4E 0x80
+                                0x4F 0x0C
+                                0x50 0x00
+                                0x51 0x70
+                                0x52 0x20
+                                0x53 0xE1
+                                0x54 0xF0
+                                0x05 0x60
+                                0x06 0x00
+                                0x07 0x80
+                                0x08 0x00
+                                0x11 0x24>;
+	};
+};
+/* fengnan@wind-mobi.com add 20180614 end */
+
+
+/*zhangchao@wind-mobi.com 20180226 begin*/
+&i2c_2 { /* mm8013 fg */
+	bq27426@55 {
+		compatible = "ti,bq27426";
+		reg = <0x55>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&otg_flag_default &pogo_flag_default>;
+		
+		ti,otg_flag = <&tlmm 20 0>;
+		ti,pogo_en = <&tlmm 45 0>;
+	};
+};
+/*zhangchao@wind-mobi.com 20180226 end*/
+
+/* caisijing@wind-mobi.com 20180201 add start */
+&i2c_3 {
+	focaltech@38{
+		compatible = "focaltech,fts";
+		reg = <0x38>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <65 0x02>;
+		focaltech,reset-gpio = <&tlmm 64 0x01>;
+		focaltech,irq-gpio = <&tlmm 65 0x02>;
+		focaltech,max-touch-number = <10>;
+		focaltech,display-coords =  <0 0 1200 1920>; //sunjingtao@wind-mobi modify at 20180208
+
+		pinctrl-names = "pmx_ts_active","pmx_ts_suspend","pmx_ts_release";
+		pinctrl-0 = <&ts_int_active &ts_reset_active>;
+		pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+		pinctrl-2 = <&ts_release>;
+/*
+sunjingtao@wind-mobi.com modify at 20180511 begin
+		focaltech,have-key;
+		focaltech,key-number = <3>;
+		focaltech,keys = <139 102 158>;
+		focaltech,key-y-coord = <1300>;
+		focaltech,key-x-coords = <200 600 800>;
+sunjingtao@wind-mobi.com modify at 20180511 end
+*/
+	};
+};
+/* caisijing@wind-mobi.com 20180201 add end */
+
+&pm8953_l10 {
+	regulator-max-microvolt = <2850000>;
+};
+
+&soc {
+	gpio_keys {
+		compatible = "gpio-keys";
+		input-name = "gpio-keys";
+		pinctrl-names = "tlmm_gpio_key_active","tlmm_gpio_key_suspend";
+		pinctrl-0 = <&gpio_key_active>;
+		pinctrl-1 = <&gpio_key_suspend>;
+
+		camera_focus {
+			label = "camera_focus";
+			gpios = <&tlmm 87 0x1>;
+			linux,input-type = <1>;
+			linux,code = <0x210>;
+			debounce-interval = <15>;
+		};
+
+		camera_snapshot {
+			label = "camera_snapshot";
+			gpios = <&tlmm 86 0x1>;
+			linux,input-type = <1>;
+			linux,code = <0x2fe>;
+			debounce-interval = <15>;
+		};
+
+		vol_up {
+			label = "volume_up";
+			gpios = <&tlmm 85 0x1>;
+			linux,input-type = <1>;
+			linux,code = <115>;
+			debounce-interval = <15>;
+		};
+	};
+	/* fengnan@wind-mobi.com add 20180207 begin */
+	hall {
+		compatible = "hall-switch";
+		pinctrl-names = "default";
+		pinctrl-0 = <&hall_sensor_int_default>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <44 0x2003>;
+		vddio-supply = <&pm8953_l5>;
+		linux,gpio-int = <&tlmm 44 0x1>;
+		linux,wakeup;
+		linux,min-uv = <1650000>;
+		linux,max-uv = <3300000>;
+	}; 
+	/* fengnan@wind-mobi.com add 20180207 end */
+	hbtp {
+		compatible = "qcom,hbtp-input";
+		vcc_ana-supply = <&pm8953_l10>;
+		vcc_dig-supply = <&pm8953_l5>;
+		qcom,afe-load = <50000>;
+		qcom,afe-vtg-min = <2850000>;
+		qcom,afe-vtg-max = <2850000>;
+		qcom,dig-load = <15000>;
+		qcom,dig-vtg-min = <1800000>;
+		qcom,dig-vtg-max = <1800000>;
+	};
+//sunjingtao@wind-mobi.com add for hardware info at 20180312 begin
+	HardwareInfo: HardwareInfo {
+		compatible = "qcom,hardware_info";
+		status = "ok";
+	 };
+//sunjingtao@wind-mobi.com add for hardware info at 20180312 end
+};
+
+&pmi_haptic{
+	qcom,actuator-type = "erm";  //sunjingtao@wind-mobi.com modify at 20180329
+	qcom,lra-auto-res-mode="qwd";
+	qcom,lra-high-z="opt1";
+	qcom,lra-res-cal-period = <0>;
+	qcom,wave-play-rate-us = <4165>;
+};
+
+&wled {
+	qcom,cons-sync-write-delay-us = <1000>;
+};
+
+&flash_led {
+	compatible = "qcom,qpnp-flash-led";
+	reg = <0xd300 0x100>;
+	qcom,follow-otst2-rb-disabled;
+};
+
+#include "msm8953-mdss-panels.dtsi"
+
+&mdss_mdp {
+	qcom,mdss-pref-prim-intf = "dsi";
+};
+
+&mdss_dsi {
+	hw-config = "single_dsi";
+};
+
+&mdss_dsi0 {
+	qcom,dsi-pref-prim-pan = <&dsi_truly_1080_vid>;
+	pinctrl-names = "mdss_default", "mdss_sleep";
+	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
+	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
+
+	qcom,platform-te-gpio = <&tlmm 24 0>;
+	qcom,platform-reset-gpio = <&tlmm 61 0>;
+	/* caisijing@wind-mobi.com 20180202 modify start */
+	qcom,platform-bklight-en-gpio = <&tlmm 16 0>;
+	/* caisijing@wind-mobi.com 20180202 modify start */
+};
+
+&mdss_dsi1 {
+	status = "disabled";
+	qcom,dsi-pref-prim-pan = <&dsi_adv7533_1080p>;
+	pinctrl-names = "mdss_default", "mdss_sleep";
+	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
+	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
+
+	qcom,pluggable;
+	qcom,platform-te-gpio = <&tlmm 24 0>;
+	qcom,platform-reset-gpio = <&tlmm 61 0>;
+	qcom,platform-bklight-en-gpio = <&tlmm 59 0>;
+};
+
+&dsi_truly_1080_vid {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	//qcom,mdss-dsi-pan-enable-dynamic-fps;  //sunjingtao@wind-mobi.com modify at 20180208
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_clk_mode";
+};
+
+//sunjingtao@wind-mobi.com add at 20180306 begin
+&dsi_focaltech_1080_vid {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	//qcom,mdss-dsi-pan-enable-dynamic-fps;  //sunjingtao@wind-mobi.com modify at 20180208
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_clk_mode";
+};
+//sunjingtao@wind-mobi.com add at 20180306 end
+
+&dsi_truly_1080_cmd {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,ulps-enabled;
+	qcom,partial-update-enabled;
+	qcom,panel-roi-alignment = <2 2 4 2 1080 2>;
+};
+
+&dsi_lgd_incell_sw49106_fhd_video {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,mdss-dsi-min-refresh-rate = <48>;
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+};
+
+&blsp1_uart0 {
+	status = "ok";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart_console_active>;
+};
+
+&mem_client_3_size {
+	qcom,peripheral-size = <0x500000>;
+};
+
+&sdhc_1 {
+	/* device core power supply */
+	vdd-supply = <&pm8953_l8>;
+	qcom,vdd-voltage-level = <2900000 2900000>;
+	qcom,vdd-current-level = <200 570000>;
+
+	/* device communication power supply */
+	vdd-io-supply = <&pm8953_l5>;
+	qcom,vdd-io-always-on;
+	qcom,vdd-io-lpm-sup;
+	qcom,vdd-io-voltage-level = <1800000 1800000>;
+	qcom,vdd-io-current-level = <200 325000>;
+
+	pinctrl-names = "active", "sleep";
+	pinctrl-0 = <&sdc1_clk_on &sdc1_cmd_on &sdc1_data_on  &sdc1_rclk_on>;
+	pinctrl-1 = <&sdc1_clk_off &sdc1_cmd_off &sdc1_data_off &sdc1_rclk_off>;
+
+	qcom,clk-rates = <400000 20000000 25000000 50000000 100000000 192000000
+								384000000>;
+	qcom,nonremovable;
+	qcom,bus-speed-mode = "HS400_1p8v", "HS200_1p8v", "DDR_1p8v";
+
+	status = "ok";
+};
+
+&sdhc_2 {
+	/* device core power supply */
+	vdd-supply = <&pm8953_l11>;
+	//sunsiyuan@wind-mobi.com modify at 20180209 begin
+	qcom,vdd-voltage-level = <3300000 3300000>;
+	//sunsiyuan@wind-mobi.com modify at 20180209 end
+	qcom,vdd-current-level = <15000 800000>;
+
+	/* device communication power supply */
+	vdd-io-supply = <&pm8953_l12>;
+	qcom,vdd-io-voltage-level = <1800000 2950000>;
+	qcom,vdd-io-current-level = <200 22000>;
+
+	pinctrl-names = "active", "sleep";
+	pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on &sdc2_cd_on>;
+	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off>;
+
+	#address-cells = <0>;
+	interrupt-parent = <&sdhc_2>;
+	interrupts = <0 1 2>;
+	#interrupt-cells = <1>;
+	interrupt-map-mask = <0xffffffff>;
+	interrupt-map = <0 &intc 0 125 0
+		1 &intc 0 221 0
+		2 &tlmm 133 0>;
+	interrupt-names = "hc_irq", "pwr_irq", "status_irq";
+	//sunsiyuan@wind-mobi.com modify at 20180209 begin
+	cd-gpios = <&tlmm 133 0x4>;
+	//sunsiyuan@wind-mobi.com modify at 20180209 end
+
+	qcom,clk-rates = <400000 20000000 25000000 50000000 100000000
+								200000000>;
+	qcom,bus-speed-mode = "SDR12", "SDR25", "SDR50", "DDR50", "SDR104";
+
+	status = "ok";
+};
+
+&pm8953_typec {
+	ss-mux-supply = <&pm8953_l13>;
+	qcom,ssmux-gpio = <&tlmm 139 GPIO_ACTIVE_HIGH>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&typec_ssmux_config>;
+};
+
+&pm8953_gpios {
+	/* GPIO 2 (NFC_CLK_REQ) */
+	gpio@c100 {
+		qcom,mode = <0>;
+		qcom,output-type = <0>;
+		qcom,pull = <0>;
+		qcom,vin-sel = <2>;
+		qcom,out-strength = <3>;
+		qcom,src-sel = <0>;
+		qcom,master-en = <1>;
+		status = "okay";
+	};
+};

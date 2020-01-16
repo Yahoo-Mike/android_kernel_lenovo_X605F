@@ -1,0 +1,7 @@
+#sunsiyuan@wind-mobi.com modify at 20180510 begin
+config TLMM
+	bool "TLMM"
+	help
+		detect sim tray status
+#sunsiyuan@wind-mobi.com modify at 20180510 end
+

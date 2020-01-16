@@ -1,0 +1,88 @@
+/* caisijing@wind-mobi.com 20180308 add */
+
+&soc {
+	fpc1020 {
+		status = "ok";
+		compatible = "fpc,fpc1020";
+		interrupt-parent = <&tlmm>;
+		interrupts = <48 0x0>;
+		fpc,power_en	= <&tlmm 62 0x0>; /* caisijing@wind-mobi.com 20180309 add */
+		fpc,gpio_rst    = <&tlmm 140 0x0>;
+		fpc,gpio_irq    = <&tlmm 48 0x0>;
+		vdd_ana-supply  = <&pm8953_l5>;
+		/* fpc,enable-on-boot; */
+		/* fpc,enable-wakeup; */
+
+		pinctrl-names = "fpc1020_reset_reset",
+			"fpc1020_reset_active",
+			"fpc1020_irq_active",
+			"fpc1020_pwr_enable"; /* caisijing@wind-mobi.com 20180309 add */
+
+		pinctrl-0 = <&msm_gpio_140>;
+		pinctrl-1 = <&msm_gpio_140_output_high>;
+		pinctrl-2 = <&msm_gpio_48>;
+		pinctrl-3 = <&msm_gpio_62>; /* caisijing@wind-mobi.com 20180309 add start */
+	};
+};
+
+&tlmm {
+	/* GPIO_140 : FP_RESET_N */
+	msm_gpio_140: msm_gpio_140 {
+		mux {
+			 pins = "gpio140";
+			 function = "gpio";
+		};
+
+		config {
+			pins = "gpio140";
+			drive-strength = <2>;
+			bias-disable;
+			output-low;
+		};
+	};
+
+	/* GPIO_140 : FP_RESET_N, state device active*/
+	msm_gpio_140_output_high: msm_gpio_140_output_high {
+		mux {
+			pins = "gpio140";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio140";
+			drive-strength = <2>;
+			bias-disable;
+			output-high;
+		};
+	};
+
+	/* GPIO_48 : FP_INT_N */
+	msm_gpio_48: msm_gpio_48 {
+		mux {
+			pins = "gpio48";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio48";
+			drive-strength = <2>;
+			bias-pull-down;
+		};
+	};
+
+	/* GPIO_62 : FP_POWER_EN */
+	msm_gpio_62: msm_gpio_62 {
+		mux {
+			pins = "gpio62";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio62";
+			drive-strength = <2>;
+			bias-disable;
+			output-high;
+		};
+	};
+};
+
