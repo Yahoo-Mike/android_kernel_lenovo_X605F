@@ -241,7 +241,9 @@ static uint16_t msm_sensor_id_by_mask(struct msm_sensor_ctrl_t *s_ctrl,
 	}
 	return sensor_id;
 }
+
 //##***wangzhancai@wind-mobi.com  --20180331 start ***
+
 static int msm_hardware_device_info(struct msm_sensor_ctrl_t *s_ctrl,
 				uint16_t chipid,
 				const char *sensor_name)
@@ -332,7 +334,9 @@ static int msm_hardware_device_info(struct msm_sensor_ctrl_t *s_ctrl,
 	pr_debug("%s: main_camera %s sub_camera %s  \n", __func__, main_camera,sub_camera);
 	return rc;
 }
+
 //##***wangzhancai@wind-mobi.com  --20180331 end ***
+
 int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 {
 //##***wangzhancai@wind-mobi.com  --20180331 start ***

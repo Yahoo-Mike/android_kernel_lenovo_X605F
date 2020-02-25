@@ -196,7 +196,4 @@ source "drivers/firmware/Kconfig"
 
 source "drivers/bif/Kconfig"
 
-#chengyewei@wind-mobi.com 20180419 begin
-source "drivers/tlmm/Kconfig"
-#chengyewei@wind-mobi.com 20180419 end
 endmenu

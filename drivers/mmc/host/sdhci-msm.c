@@ -199,9 +199,6 @@
 /* Timeout value to avoid infinite waiting for pwr_irq */
 #define MSM_PWR_IRQ_TIMEOUT_MS 5000
 
-//add for BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180209 begin
-#define IC_ADD_FUNCTION  1
-//add for BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180209 end
 static const u32 tuning_block_64[] = {
 	0x00FF0FFF, 0xCCC3CCFF, 0xFFCC3CC3, 0xEFFEFFFE,
 	0xDDFFDFFF, 0xFBFFFBFF, 0xFF7FFFBF, 0xEFBDF777,
@@ -963,10 +960,8 @@ int sdhci_msm_execute_tuning(struct sdhci_host *host, u32 opcode)
 	u8 drv_type = 0;
 	bool drv_type_changed = false;
 	struct mmc_card *card = host->mmc->card;
-	//BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 	int sts_retry;
 	u8 last_good_phase = 0;
-	//BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
 
 	/*
 	 * Tuning is required for SDR104, HS200 and HS400 cards and
@@ -1030,6 +1025,9 @@ retry:
 			.data = &data
 		};
 		struct scatterlist sg;
+
+/******************************************* start LENOVO code *******************************************/
+
 		//BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 		struct mmc_command sts_cmd = {0};
 		//BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
@@ -1183,7 +1181,6 @@ out:
 	return rc;
 }
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
-#ifdef IC_ADD_FUNCTION 
 //add for BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180209 begin
 #define TRUE	1
 #define FALSE	0
@@ -1207,7 +1204,6 @@ typedef struct
     u8 rl_bits;
 } rl_bit_lct;
 
-
 static rl_bit_lct cfg_bit_map[6] =
 {
     { 0, 6 },
@@ -1225,7 +1221,6 @@ t_gg_reg_strt pha_stas_tx_low32 = { 205, 0xffffffff, 0 };
 t_gg_reg_strt pha_stas_tx_high32 = { 237, 0xffffffff, 0 };
 t_gg_reg_strt dll_sela_after_mask = {141, 0xf , 0};
 t_gg_reg_strt dll_selb_after_mask = {145, 0xf, 0 };
-
 
 t_gg_reg_strt lp3p3v_ocb = { 4, 0x1, 0 };
 t_gg_reg_strt analog_ip_read_volatge_mask = { 154, 0xf, 0 };
@@ -1257,7 +1252,6 @@ t_gg_reg_strt inject_failure_for_tuning_enable_cfg = { 357, 0x1 , 0 };
 t_gg_reg_strt inject_failure_for_200m_tuning_cfg = { 93, 0x7ff , 0 };
 t_gg_reg_strt inject_failure_for_100m_tuning_cfg = { 81, 0x7ff , 0 };
 
-
 t_gg_reg_strt cclk_ds_18 = { 3, 0x7 , 0 };
 
 #define MAX_CFG_BIT_VAL (383)
@@ -1267,7 +1261,6 @@ static void cfg_bit_2_bt(int max_bit, int tar, int* byt, int *bit)
     *byt = (max_bit - tar) / 6;
     *bit = cfg_bit_map[(max_bit - tar) % 6].rl_bits;
 }
-
 
 static u32 cfg_read_bits_ofs_mask(u8 * cfg, t_gg_reg_strt * bts)
 {
@@ -1320,7 +1313,6 @@ static void cfg_write_bits_ofs_mask(u8 * cfg, t_gg_reg_strt * bts, u32 w_value)
     }
     while(1);
 }
-
 
 void ram_bit_2_bt(int tar, int* byt, int *bit)
 {
@@ -1472,6 +1464,7 @@ void host_cmddat_line_reset(struct sdhci_host *host){
         }
 }
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 static int gg_select_card_spec(struct sdhci_host *host)
 {
@@ -1522,6 +1515,7 @@ static int gg_select_card_spec(struct sdhci_host *host)
 	return 0;
 }
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 void dump_u32_buf(u8 * ptb, int len)
 {
     int i = 0;
@@ -1531,6 +1525,7 @@ void dump_u32_buf(u8 * ptb, int len)
         PrintMsg(" [%d]:%08xh\n", i, tb[i]);
     }
 }
+
 bool gg_emulator_read(
     struct sdhci_host *host,
     u8 * data,
@@ -1561,9 +1556,6 @@ bool gg_emulator_read(
 
 
         ret = gg_select_card_spec(host);
-
-       
-        
 
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 exit:
@@ -1684,8 +1676,6 @@ exit:
     return ret?FALSE:TRUE;
 }
 
-
-
 #define MAX_GG_REG_NUM 16
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 u32 gg_sw_def[MAX_GG_REG_NUM]=GGC_CFG_DATA;
@@ -1707,10 +1697,12 @@ void set_gg_reg_cur_val(u8 * data)
 {
     os_memcpy(&g_gg_reg_cur[0], data, sizeof(g_gg_reg_cur));
 }
+
 void get_gg_reg_cur_val(u8 * data)
 {
     os_memcpy(data, &g_gg_reg_cur[0], sizeof(g_gg_reg_cur));
 }
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 void bht_gg_status(struct mmc_host *mmc_host)
 {
@@ -1746,7 +1738,6 @@ bool get_gg_reg_cur(struct sdhci_host *host, u8 * data, t_gg_reg_strt * gg_reg_a
 exit:
     return ret;
 }
-
 
 bool chg_gg_reg(struct sdhci_host *host,  u8 * data, t_gg_reg_strt * gg_reg_arr, u8 num)
 {
@@ -1799,9 +1790,7 @@ void chg_gg_reg_tmp(u8 * data, t_gg_reg_strt * gg_reg_arr, u8 num)
     set_gg_reg_tmp(data);
 }
 
-
 bool b_output_tuning;
-
 bool is_output_tuning(void)
 {
     return b_output_tuning;
@@ -1911,9 +1900,7 @@ bool gg_fix_output_tuning_phase(struct sdhci_host *host,  int sela, int selb)
     gg_reg_arr[6].value = 0;
     gg_reg_arr[7].value = 0;
 
-
     chg_gg_reg_cur_val(data, gg_reg_arr, 8, TRUE);
-
 
     return gg_emulator_write(host, data, 512);
 }
@@ -1934,7 +1921,7 @@ void gen_array_data(u32 low32, u32 high32, u32 * ptw)
         u32 tmp_data = (i < 32) ? low32 : high32;
         tu_res_per[i / TUNING_PHASE_SIZE][i % TUNING_PHASE_SIZE] = (tmp_data & (1 << (i % 32))) >> (i % 32);
     }
-//
+
     for(i_mode = 0; i_mode < TUNING_PHASE_SIZE; i_mode++)
     {
         for(j = 0; j < MAX_TUNING_RESULT_COMBO_SIZE; j++)
@@ -1952,7 +1939,6 @@ void gen_array_data(u32 low32, u32 high32, u32 * ptw)
         *ptw = tw;
 }
 
-
 bool sw_calc_tuning_result(struct sdhci_host *host,  u32 * tx_selb, u32 * all_selb)
 {
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
@@ -1963,15 +1949,12 @@ bool sw_calc_tuning_result(struct sdhci_host *host,  u32 * tx_selb, u32 * all_se
     t_gg_reg_strt gg_reg_arr[6] ;
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
 
-
     os_memcpy(&gg_reg_arr[0], &pha_stas_tx_low32, sizeof(t_gg_reg_strt));
     os_memcpy(&gg_reg_arr[1], &pha_stas_tx_high32, sizeof(t_gg_reg_strt));
     os_memcpy(&gg_reg_arr[2], &pha_stas_rx_low32, sizeof(t_gg_reg_strt));
     os_memcpy(&gg_reg_arr[3], &pha_stas_rx_high32, sizeof(t_gg_reg_strt));
     os_memcpy(&gg_reg_arr[4], &dll_sela_after_mask, sizeof(t_gg_reg_strt));
     os_memcpy(&gg_reg_arr[5], &dll_selb_after_mask, sizeof(t_gg_reg_strt));
-
-
 
     ret = get_gg_reg_cur(host, data, gg_reg_arr, 6);
 
@@ -2073,7 +2056,6 @@ u32 tx_selb_failed_history_get(struct sdhci_host *host)
 
 }
 
-
 u32 g_tx_selb_tb_sdr104[TUNING_PHASE_SIZE] =
 {
     BIT_PASS_MASK,
@@ -2104,7 +2086,6 @@ void tx_selb_failed_tb_update(struct sdhci_host *host, int sela, u32 val)
         g_tx_selb_tb_sdr50[sela] &= val;
         DbgInfo(MODULE_SD_HOST, FEATURE_VENREG_TRACEW, NOT_TO_RAM, "%s %xh %xh\n", __FUNCTION__, val, g_tx_selb_tb_sdr50[sela]);
     }
-
 
 }
 
@@ -2159,7 +2140,6 @@ void all_selb_failed_history_update(struct sdhci_host *host, int sela, u32 val)
         DbgInfo(MODULE_SD_HOST, FEATURE_VENREG_TRACEW, NOT_TO_RAM, "%s %xh %xh\n", __FUNCTION__, val, g_all_selb_tb_sdr50[sela]);
     }
 
-
 }
 
 void all_selb_failed_history_reset(struct sdhci_host *host)
@@ -2197,7 +2177,6 @@ void chk_phase_window(u8 * tuning_win, u8 * mid_val, u8 * max_pass_win)    // ty
 
     os_memset(tuning_pass, 1, sizeof(tuning_pass));
     os_memset(tuning_pass_start, 1, sizeof(tuning_pass_start));
-
 
     {
         for(i = 0; i < TUNING_PHASE_SIZE; i++)
@@ -2278,18 +2257,12 @@ void bits_generate_array(u8 * tb, u32 v)
     dump_array(tb);
 }
 
-
-
-
-
 typedef struct
 {
     u8 right_valid : 1;
     u8 first_valid : 1;
     u8 record_valid : 1;
 } chk_type_t;
-
-
 
 // normal check continue 1
 void chk_arr_max_win(u8 * tuning_win, u8 first_i, u8 * mid_val, u8 * max_pass_win, chk_type_t type)    // type[0] = 0: if 011110, right 1 index is the middle value, type[1] = 1: first_i valid
@@ -2372,6 +2345,7 @@ void no_fail_p(u8 * tuning_win, u8 * mid_val, u8 * max_pass_win)
     chk_arr_max_win(tuning_win, first_0, mid_val, max_pass_win, type);
 
 }
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 int sdhci_bht_sdr104_execute_tuning(struct sdhci_host *host, u32 opcode)
 {
@@ -2450,22 +2424,69 @@ retry:
 		rc = msm_config_cm_dll_phase(host, phase);
 		if (rc)
 			goto kfree;
-		
 
+/******************************************* end LENOVO code *******************************************/
+		
 		cmd.opcode = opcode;
 		cmd.flags = MMC_RSP_R1 | MMC_CMD_ADTC;
 
 		data.blksz = size;
 		data.blocks = 1;
 		data.flags = MMC_DATA_READ;
-		data.timeout_ns = 30 * 1000 * 1000; /* 30 ms */
+		data.timeout_ns = 1000 * 1000 * 1000; /* 1 sec */
 
 		data.sg = &sg;
 		data.sg_len = 1;
 		sg_init_one(&sg, data_buf, size);
-		memset(data_buf, 0, size);	
+
+		memset(data_buf, 0, size);
 		mmc_wait_for_req(mmc, &mrq);
-		
+
+		if (card && (cmd.error || data.error)) {
+			/*
+			 * Set the dll to last known good phase while sending
+			 * status command to ensure that status command won't
+			 * fail due to bad phase.
+			 */
+			if (tuned_phase_cnt)
+				last_good_phase =
+					tuned_phases[tuned_phase_cnt-1];
+			else if (msm_host->saved_tuning_phase !=
+					INVALID_TUNING_PHASE)
+				last_good_phase = msm_host->saved_tuning_phase;
+
+			rc = msm_config_cm_dll_phase(host, last_good_phase);
+			if (rc)
+				goto kfree;
+
+			sts_cmd.opcode = MMC_SEND_STATUS;
+			sts_cmd.arg = card->rca << 16;
+			sts_cmd.flags = MMC_RSP_R1 | MMC_CMD_AC;
+			sts_retry = 5;
+			while (sts_retry) {
+				mmc_wait_for_cmd(mmc, &sts_cmd, 0);
+
+				if (sts_cmd.error ||
+				   (R1_CURRENT_STATE(sts_cmd.resp[0])
+				   != R1_STATE_TRAN)) {
+					sts_retry--;
+					/*
+					 * wait for at least 146 MCLK cycles for
+					 * the card to move to TRANS state. As
+					 * the MCLK would be min 200MHz for
+					 * tuning, we need max 0.73us delay. To
+					 * be on safer side 1ms delay is given.
+					 */
+					usleep_range(1000, 1200);
+					pr_debug("%s: phase %d sts cmd err %d resp 0x%x\n",
+						mmc_hostname(mmc), phase,
+						sts_cmd.error, sts_cmd.resp[0]);
+					continue;
+				}
+				break;
+			};
+		}
+
 		if (!cmd.error && !data.error &&
 			!memcmp(data_buf, tuning_block_pattern, size)) {
 			/* tuning is successful at this tuning point */
@@ -2547,11 +2568,12 @@ out:
 	if (!rc)
 		msm_host->tuning_done = true;
 	spin_unlock_irqrestore(&host->lock, flags);
-
+	msm_host->tuning_in_progress = false;
 	pr_debug("%s: Exit %s, err(%d)\n", mmc_hostname(mmc), __func__, rc);
 	return rc;
 }
 
+/******************************************* start LENOVO code *******************************************/
 int sdhci_bht_sdr50_execute_tuning(struct sdhci_host *host, u32 opcode)
 {
 
@@ -2562,11 +2584,7 @@ int sdhci_bht_sdr50_execute_tuning(struct sdhci_host *host, u32 opcode)
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
 	struct sdhci_msm_host *msm_host = pltfm_host->priv;
 
-
-
-
 	pr_debug("%s: Enter %s\n", mmc_hostname(mmc), __func__);
-
 
 	data_buf = kmalloc(size, GFP_KERNEL);
 	if (!data_buf) {
@@ -2574,7 +2592,6 @@ int sdhci_bht_sdr50_execute_tuning(struct sdhci_host *host, u32 opcode)
 		rc = -ENOMEM;
 		goto out;
 	}
-
 
 	phase = 0;
 	do {
@@ -2585,8 +2602,6 @@ int sdhci_bht_sdr50_execute_tuning(struct sdhci_host *host, u32 opcode)
 			.data = &data
 		};
 		struct scatterlist sg;
-
-		
 
 		cmd.opcode = opcode;
 		cmd.flags = MMC_RSP_R1 | MMC_CMD_ADTC;
@@ -2622,29 +2637,25 @@ int sdhci_bht_sdr50_execute_tuning(struct sdhci_host *host, u32 opcode)
 		}
 	
 	} while (++phase < 16);
-
 	
-//kfree:
 	kfree(data_buf);
 out:
-
 
 	return rc;
 }
 
 int sd_tuning_sw(struct sdhci_host *host)
 {
-int ret=0;
-if(is_bus_mode_sdr104(host))
-{
-
-ret =sdhci_bht_sdr104_execute_tuning(host,0x13);
-}
-else
-{
-ret=sdhci_bht_sdr50_execute_tuning(host,0x13);
-}
-return !ret;
+	int ret=0;
+	if(is_bus_mode_sdr104(host))
+	{
+		ret =sdhci_bht_sdr104_execute_tuning(host,0x13);
+	}
+	else
+	{
+		ret=sdhci_bht_sdr50_execute_tuning(host,0x13);
+	}
+	return !ret;
 }
 
 #define SD_TUNING_TIMEOUT_MS 150
@@ -2654,7 +2665,6 @@ bool sd_gg_tuning_status(
 )
 {
     bool ret = FALSE;
-
    
     {
    
@@ -2671,8 +2681,6 @@ bool sd_gg_tuning_status(
             }
         }
     }
-
-
     
     DbgInfo(MODULE_SD_CARD, FEATURE_CARD_INIT, NOT_TO_RAM, "Exit(%d) %s\n", ret, __FUNCTION__);
     return ret;
@@ -2698,6 +2706,7 @@ int  get_config_selb_setting(struct sdhci_host *host)
     else
         return g_def_selb_100m;
 }
+
 void get_defualt_setting(u8 * data)
 {
     g_def_sela_100m = cfg_read_bits_ofs_mask(data, &dll_sela_100m_cfg);
@@ -2770,7 +2779,6 @@ int get_sela_nearby_pass_window(u32  sela, u32 base)
     else
         idx--;
 
-//
     for(i = 0; i < TUNING_PHASE_SIZE; i++)
     {
         if(GET_IDX_VALUE(sela, idx))
@@ -2911,8 +2919,6 @@ next:
     PrintMsg("rf sela:%xh, selb:%x\n", *rfa , *rfb);
     return TRUE;
 }
-
-
 #define OUTPUT_PASS_TYPE  0
 #define SET_PHASE_FAIL_TYPE  1
 #define TUNING_FAIL_TYPE 2
@@ -2928,6 +2934,7 @@ int update_selb(struct sdhci_host *host,  int target_selb)
 
     return target_selb;
 }
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 bool _ggc_output_tuning(struct sdhci_host *host, u8 * selb_pass_win)
 {
@@ -2972,7 +2979,6 @@ bool _ggc_output_tuning(struct sdhci_host *host, u8 * selb_pass_win)
         u8 selb_tuning_pass_num = 0;
         u8 first_selb = 0;
 
- 
         status_ret = FALSE;
         ret = sd_gg_tuning_status(host,  &tx_selb, &all_selb, &status_ret);
         if(ret == FALSE)
@@ -2980,7 +2986,6 @@ bool _ggc_output_tuning(struct sdhci_host *host, u8 * selb_pass_win)
             DbgErr("Error when output_tuning, first sd_tuning fail\n");
             goto sel_test;
         }
-
 
         if(TRUE == status_ret)
         {
@@ -2998,7 +3003,6 @@ bool _ggc_output_tuning(struct sdhci_host *host, u8 * selb_pass_win)
         no_fail_p(tuning_win, &first_selb, &selb_tuning_pass_num);
         selb_cur = first_selb;
     }
-
 
 sel_test:
 //init
@@ -3093,10 +3097,8 @@ next_dll_sela:
         ;
     }
 
-
-    //
     {
-        int i = 0;
+        int i;
 
         for(i = 0; i < TUNING_PHASE_SIZE; i++)
         {
@@ -3107,7 +3109,6 @@ next_dll_sela:
                      all_str, tx_str,
                      all_selb_failed_history_get(host, i) , tx_selb_failed_tb_get(host, i),
                      op_dbg_str[tuning_error_type[i]]);
-
         }
         {
             u32 tx_selb = tx_selb_failed_history_get(host);
@@ -3117,7 +3118,6 @@ next_dll_sela:
             {
                 all_selb_failed_history_update(host, i, tx_selb);//inject tx_selb failed
             }
-#if  1
             PrintMsg("inject sw sela failed point to all_selb\n");
             if(is_bus_mode_sdr104(host))
             {
@@ -3134,7 +3134,6 @@ next_dll_sela:
                     all_selb_failed_history_update(host, i, 0);//inject sela failed
                 }
             }
-#endif
             for(i = 0; i < TUNING_PHASE_SIZE; i++)
             {
                 u8 all_str[TUNING_PHASE_SIZE+1], tx_str[TUNING_PHASE_SIZE+1];
@@ -3159,7 +3158,6 @@ next_dll_sela:
             //if((tx_selb & 0x7ff )== 0x7ff) //all pass
             PrintMsg("---selb merge---\n");
             {
-#if 1
                 if(is_bus_mode_sdr104(host))
                 {
                     u32 cfg =0x7ff;
@@ -3172,7 +3170,6 @@ next_dll_sela:
                     tx_selb &= cfg;
                     PrintMsg("tx selb:%xh SDR50 inject:%xh merge tx_selb:%xh\n", tx_tmp, cfg, tx_selb);
                 }
-#endif
             }
 
             {
@@ -3216,16 +3213,6 @@ next_dll_sela:
                 bits_generate_array(win_tb, all_sela);
                 chk_phase_window(win_tb, &win_mid, &win_max);
                 target_sela = win_mid;
-				#if 0
-                if(host->info.sw_cur_setting.sd_access_mode == SD_FNC_AM_SDR50 ||
-                        (host->info.sw_cur_setting.sd_access_mode == SD_FNC_AM_SDR104 &&
-                         (get_pass_window_weight(host->host->cfg->output_pfm.sw_sela_sdr104.fail_phase) != 11)))
-                {
-                    // move for host
-                    PrintMsg("base sela:%xh, selb:%x\n", target_sela , target_selb);
-                    get_refine_sel(host, target_sela, target_selb, &target_sela, &target_selb);
-                }
-				#endif
             }
 
         }
@@ -3274,6 +3261,7 @@ exit:
 PrintMsg("exit:%s  %d\n",__FUNCTION__,ret);
     return ret;
 }
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
 void ggc_chip_init(struct sdhci_host *host)
 { 
@@ -3329,8 +3317,9 @@ static int sdhci_bht_execute_tuning(struct sdhci_host *host, u32 opcode){
 	  return sdhci_msm_execute_tuning(host,opcode);
 }
 //add for BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180209 end
-#endif
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
+/******************************************* end LENOVO code *******************************************/
 
 static int sdhci_msm_setup_gpio(struct sdhci_msm_pltfm_data *pdata, bool enable)
 {
@@ -4543,12 +4532,14 @@ static irqreturn_t sdhci_msm_pwr_irq(int irq, void *data)
 
 	/* Handle BUS ON/OFF*/
 	if (irq_status & CORE_PWRCTL_BUS_ON) {
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 		if (  sdhci_bht_target_host(host)){
 			
 				gpio_direction_output(141,1);//set PWR GPIO on
 		}
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 		ret = sdhci_msm_setup_vreg(msm_host->pdata, true, false);
 		if (!ret) {
 			ret = sdhci_msm_setup_pins(msm_host->pdata, true);
@@ -4565,6 +4556,7 @@ static irqreturn_t sdhci_msm_pwr_irq(int irq, void *data)
 	}
 	if (irq_status & CORE_PWRCTL_BUS_OFF) {
 		if (msm_host->pltfm_init_done)
+
 		//BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 			{
 			if (  sdhci_bht_target_host(host)){
@@ -4579,6 +4571,7 @@ static irqreturn_t sdhci_msm_pwr_irq(int irq, void *data)
 
 			}
 		//BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 		if (!ret) {
 			ret = sdhci_msm_setup_pins(msm_host->pdata, false);
 			ret |= sdhci_msm_set_vdd_io_vol(msm_host->pdata,
@@ -5043,6 +5036,7 @@ static void sdhci_msm_set_clock(struct sdhci_host *host, unsigned int clock)
 
 	curr_pwrsave = !!(readl_relaxed(host->ioaddr + CORE_VENDOR_SPEC) &
 			  CORE_CLK_PWRSAVE);
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 	if ( sdhci_bht_target_host(host)){
 		
@@ -5067,6 +5061,7 @@ static void sdhci_msm_set_clock(struct sdhci_host *host, unsigned int clock)
 					host->ioaddr + CORE_VENDOR_SPEC);
 	}
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 	sup_clock = sdhci_msm_get_sup_clk_rate(host, clock);
 	if ((curr_ios.timing == MMC_TIMING_UHS_DDR50) ||
 		(curr_ios.timing == MMC_TIMING_MMC_DDR52) ||
@@ -5951,7 +5946,6 @@ static struct sdhci_ops sdhci_msm_ops = {
 	.set_uhs_signaling = sdhci_msm_set_uhs_signaling,
 	.check_power_status = sdhci_msm_check_power_status,
 	//add for BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180209 begin
-	//.platform_execute_tuning = sdhci_msm_execute_tuning,
 	.platform_execute_tuning = sdhci_bht_execute_tuning, 
 	//add for BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180209 end
 	.enhanced_strobe = sdhci_msm_enhanced_strobe,
@@ -6796,6 +6790,7 @@ static int sdhci_msm_suspend(struct device *dev)
 	struct sdhci_host *host = dev_get_drvdata(dev);
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
 	struct sdhci_msm_host *msm_host = pltfm_host->priv;
+	struct mmc_host *mmc = host->mmc;
 	int ret = 0;
 	int sdio_cfg = 0;
 	ktime_t start = ktime_get();
@@ -6811,6 +6806,8 @@ static int sdhci_msm_suspend(struct device *dev)
 	}
 	ret = sdhci_msm_runtime_suspend(dev);
 out:
+	/* cancel any clock gating work scheduled by mmc_host_clk_release() */
+	cancel_delayed_work_sync(&mmc->clk_gate_work);
 	sdhci_msm_disable_controller_clock(host);
 	if (host->mmc->card && mmc_card_sdio(host->mmc->card)) {
 		sdio_cfg = sdhci_msm_cfg_sdio_wakeup(host, true);

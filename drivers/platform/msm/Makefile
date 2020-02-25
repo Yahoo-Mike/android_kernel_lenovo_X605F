@@ -2,16 +2,6 @@
 # Makefile for the MSM specific device drivers.
 #
 
-#for ramdump mode in user/userdebug--sunsiyuan@wind-mobi.com modify at 20180528 begin
-ifeq ($(WIND_DEF_P100_FACTORY),true)
-DEFS = -DWIND_DISABLE_RAMDUMP_IN_FACTORY=1
-ccflags-y += $(DEFS)
-else
-DEFS = -DWIND_DISABLE_RAMDUMP_IN_FACTORY=0
-ccflags-y += $(DEFS)
-endif
-#for ramdump mode in user/userdebug--sunsiyuan@wind-mobi.com modify at 20180528 end
-
 ccflags-y += -Isecurity/selinux -Isecurity/selinux/include
 
 obj-$(CONFIG_MSM_BUS_SCALING) += msm_bus/
@@ -35,4 +25,3 @@ obj-$(CONFIG_QPNP_VIBRATOR) += qpnp-vibrator.o
 obj-$(CONFIG_MSM_AVTIMER) += avtimer.o
 obj-$(CONFIG_MSM_11AD) += msm_11ad/
 obj-$(CONFIG_MSM_MHI_DEV) += mhi_dev/
-obj-$(CONFIG_SSM) += ssm.o

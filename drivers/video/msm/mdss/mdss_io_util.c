@@ -17,6 +17,7 @@
 #include <linux/mdss_io_util.h>
 
 #define MAX_I2C_CMDS  16
+
 /* modify begin by zhangchaofan@wind-mobi.com, 2018-04-16 */
 extern unsigned int gesture_enable;
 /* modify end by zhangchaofan@wind-mobi.com, 2018-04-16 */
@@ -332,6 +333,7 @@ int msm_dss_enable_vreg(struct dss_vreg *in_vreg, int num_vreg, int enable)
 	}
 	return rc;
 /* modify end by sunjingtao@wind-mobi.com, 2018-05-04 */
+
 disable_vreg:
 	regulator_set_optimum_mode(in_vreg[i].vreg,
 					in_vreg[i].load[DSS_REG_MODE_DISABLE]);

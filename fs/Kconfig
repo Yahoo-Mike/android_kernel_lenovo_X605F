@@ -91,9 +91,11 @@ if BLOCK
 menu "DOS/FAT/NT Filesystems"
 
 source "fs/fat/Kconfig"
+
 # sunjingtao@wind-mobi.com 20180320 begin
 source "fs/exfat/Kconfig"
 # sunjingtao@wind-mobi.com 20180320 end
+
 source "fs/ntfs/Kconfig"
 
 endmenu

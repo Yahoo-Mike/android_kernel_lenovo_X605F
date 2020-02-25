@@ -1136,8 +1136,18 @@ config TOUCHSCREEN_MAXIM_STI
 	  module will be called maxim_sti.
 
 source "drivers/input/touchscreen/gt9xx/Kconfig"
-# caisijing@wind-mobi.com 20180201 add start
 source "drivers/input/touchscreen/focaltech_touch/Kconfig"
-# caisijing@wind-mobi.com 20180201 add end
+
+config TOUCHSCREEN_HIMAX_CHIPSET
+	bool "Himax touchpanel CHIPSET"
+	depends on I2C
+	help
+	  Say Y here if you have a Himax CHIPSET touchscreen.
+	  HIMAX controllers are multi touch controllers which can
+	  report 10 touches at a time.
+
+          If unsure, say N.
+
+source "drivers/input/touchscreen/hxchipset/Kconfig"
 
 endif

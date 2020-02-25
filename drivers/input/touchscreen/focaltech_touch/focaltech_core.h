@@ -215,7 +215,6 @@ int fts_esdcheck_suspend(void);
 int fts_esdcheck_resume(void);
 #endif
 
-
 /* Point Report Check*/
 #if FTS_POINT_REPORT_CHECK_EN
 int fts_point_report_check_init(struct fts_ts_data *ts_data);

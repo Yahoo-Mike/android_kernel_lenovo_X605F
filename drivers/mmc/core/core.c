@@ -52,7 +52,6 @@
 #include "sdio_ops.h"
 
 //add for BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180209 begin
-#define IC_ADD_FUNCTION  1
 #include "../drivers/mmc/host/sdhci.h"
 //add for BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180209 end
 
@@ -492,8 +491,8 @@ static int mmc_devfreq_set_target(struct device *dev,
 
 	pr_debug("%s: target freq = %lu (%s)\n", mmc_hostname(host),
 		*freq, current->comm);
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
-#ifdef IC_ADD_FUNCTION 
 	{  struct sdhci_host * sdhost = mmc_priv(host);
 
 			if(sdhci_bht_target_host(sdhost))
@@ -501,8 +500,8 @@ static int mmc_devfreq_set_target(struct device *dev,
 				goto out;
 			}
 	}
-#endif
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 	if ((clk_scaling->curr_freq == *freq) ||
 		clk_scaling->skip_clk_scale_freq_update)
 		goto out;
@@ -3017,6 +3016,13 @@ static void _mmc_detect_change(struct mmc_host *host, unsigned long delay,
 		pm_wakeup_event(mmc_dev(host), 5000);
 
 	host->detect_change = 1;
+	/*
+	 * Change in cd_gpio state, so make sure detection part is
+	 * not overided because of manual resume.
+	 */
+	if (cd_irq && mmc_bus_manual_resume(host))
+		host->ignore_bus_resume_flags = true;
+
 	mmc_schedule_delayed_work(&host->detect, delay);
 }
 
@@ -3938,6 +3944,8 @@ void mmc_rescan(struct work_struct *work)
 		host->bus_ops->detect(host);
 
 	host->detect_change = 0;
+	if (host->ignore_bus_resume_flags)
+		host->ignore_bus_resume_flags = false;
 
 	/*
 	 * Let mmc_bus_put() free the bus/bus_ops if we've found that
@@ -4176,6 +4184,14 @@ int mmc_pm_notify(struct notifier_block *notify_block,
 		if (!err)
 			break;
 
+		if (!mmc_card_is_removable(host)) {
+			dev_warn(mmc_dev(host),
+				 "pre_suspend failed for non-removable host: "
+				 "%d\n", err);
+			/* Avoid removing non-removable hosts */
+			break;
+		}
+
 		/* Calling bus_ops->remove() with a claimed host can deadlock */
 		host->bus_ops->remove(host);
 		mmc_claim_host(host);
@@ -4191,7 +4207,8 @@ int mmc_pm_notify(struct notifier_block *notify_block,
 
 		spin_lock_irqsave(&host->lock, flags);
 		host->rescan_disable = 0;
-		if (mmc_bus_manual_resume(host)) {
+		if (mmc_bus_manual_resume(host) &&
+				!host->ignore_bus_resume_flags) {
 			spin_unlock_irqrestore(&host->lock, flags);
 			break;
 		}

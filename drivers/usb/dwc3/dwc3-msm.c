@@ -2106,6 +2106,12 @@ static int dwc3_msm_suspend(struct dwc3_msm *mdwc)
 		return -EBUSY;
 	}
 
+	if (!mdwc->in_host_mode && (mdwc->vbus_active && !mdwc->suspend)) {
+		dev_dbg(mdwc->dev,
+			"Received wakeup event before the core suspend\n");
+		return -EBUSY;
+	}
+
 	ret = dwc3_msm_prepare_suspend(mdwc);
 	if (ret)
 		return ret;
@@ -3620,6 +3626,9 @@ static void dwc3_msm_otg_batt_current_work(struct work_struct *w)
 }
 //zhangchao@wind-mobi.com modify for OTG OCP at 20180607 end
 
+
+int g_boost_en_pin = 0;   //zhangchao@wind-mobi.com 20180516 modify for OTG and POGO
+
 /**
  * dwc3_otg_start_host -  helper function for starting/stoping the host controller driver.
  *
@@ -3628,11 +3637,11 @@ static void dwc3_msm_otg_batt_current_work(struct work_struct *w)
  *
  * Returns 0 on success otherwise negative errno.
  */
- int g_boost_en_pin = 0;   //zhangchao@wind-mobi.com 20180516 modify for OTG and POGO
 static int dwc3_otg_start_host(struct dwc3_msm *mdwc, int on)
 {
 	struct dwc3 *dwc = platform_get_drvdata(mdwc->dwc3);
 	int ret = 0;
+
 	//zhangchao@wind-mobi.com 20180516 for OTG and POGO begin
 	struct device_node *node = mdwc->dev->of_node;
 	int typec_en_pin, boost_en_pin;
@@ -3766,6 +3775,7 @@ static int dwc3_otg_start_host(struct dwc3_msm *mdwc, int on)
 			msecs_to_jiffies(1000 * PM_QOS_SAMPLE_SEC));
 	} else {
 		dev_dbg(mdwc->dev, "%s: turn off host\n", __func__);
+
 		//zhangchao@wind-mobi.com 20180516 for OTG and POGO begin
 		if(gpio_is_valid(boost_en_pin)){
 			gpio_request(boost_en_pin,"msmdwc,boost_en");

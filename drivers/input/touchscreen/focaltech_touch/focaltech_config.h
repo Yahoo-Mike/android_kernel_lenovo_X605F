@@ -128,14 +128,13 @@
  * Gesture function enable
  * default: disable
  */
-#define FTS_GESTURE_EN                          1	/*zhangchaofan@wind-mobi.com add for XXX 2018-04-16  begin*/
+#define FTS_GESTURE_EN                          1
  
 /*
  * ESD check & protection
  * default: disable
  */
-#define FTS_ESDCHECK_EN                         1	/*zhangchaofan@wind-mobi.com add for XXX 2018-04-08  begin*/
-
+#define FTS_ESDCHECK_EN                         1
 
 /*
  * Glove mode enable

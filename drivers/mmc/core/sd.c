@@ -27,7 +27,6 @@
 #include "sd.h"
 #include "sd_ops.h"
 //add for BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180209 begin
-#define IC_ADD_FUNCTION  1
 #include "../drivers/mmc/host/sdhci.h"
 //add for BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180209 end
 
@@ -339,6 +338,7 @@ static int mmc_read_switch(struct mmc_card *card)
 		card->sw_caps.sd3_bus_mode = status[13];
 		/* Driver Strengths supported by the card */
 		card->sw_caps.sd3_drv_type = status[9];
+		card->sw_caps.sd3_curr_limit = status[7] | status[6] << 8;
 	}
 
 out:
@@ -596,14 +596,25 @@ static int sd_set_current_limit(struct mmc_card *card, u8 *status)
 	 * when we set current limit to 200ma, the card will draw 200ma, and
 	 * when we set current limit to 400/600/800ma, the card will draw its
 	 * maximum 300ma from the host.
+	 *
+	 * The above is incorrect: if we try to set a current limit that is
+	 * not supported by the card, the card can rightfully error out the
+	 * attempt, and remain at the default current limit.  This results
+	 * in a 300mA card being limited to 200mA even though the host
+	 * supports 800mA. Failures seen with SanDisk 8GB UHS cards with
+	 * an iMX6 host. --rmk
 	 */
-	if (max_current >= 800)
+	if (max_current >= 800 &&
+	    card->sw_caps.sd3_curr_limit & SD_MAX_CURRENT_800)
 		current_limit = SD_SET_CURRENT_LIMIT_800;
-	else if (max_current >= 600)
+	else if (max_current >= 600 &&
+		 card->sw_caps.sd3_curr_limit & SD_MAX_CURRENT_600)
 		current_limit = SD_SET_CURRENT_LIMIT_600;
-	else if (max_current >= 400)
+	else if (max_current >= 400 &&
+		 card->sw_caps.sd3_curr_limit & SD_MAX_CURRENT_400)
 		current_limit = SD_SET_CURRENT_LIMIT_400;
-	else if (max_current >= 200)
+	else if (max_current >= 200 &&
+		 card->sw_caps.sd3_curr_limit & SD_MAX_CURRENT_200)
 		current_limit = SD_SET_CURRENT_LIMIT_200;
 
 	if (current_limit != SD_SET_CURRENT_NO_CHANGE) {
@@ -679,7 +690,6 @@ out:
 }
 
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
-#ifdef IC_ADD_FUNCTION 
 int mmc_app_acmd42(struct mmc_card *card)
 {
 	int err;
@@ -697,8 +707,8 @@ int mmc_app_acmd42(struct mmc_card *card)
 
 	return 0;
 }
-#endif
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 /*
  * UHS-I specific initialization procedure
  */
@@ -729,11 +739,11 @@ static int mmc_sd_init_uhs_card(struct mmc_card *card)
 
 		mmc_set_bus_width(card->host, MMC_BUS_WIDTH_4);
 	}
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
-#ifdef IC_ADD_FUNCTION 
 	mmc_app_acmd42(card);
-#endif
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 	/*
 	 * Select the bus speed mode depending on host
 	 * and card capability.
@@ -1013,9 +1023,6 @@ unsigned mmc_sd_get_max_clock(struct mmc_card *card)
 }
 
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
-#ifdef IC_ADD_FUNCTION
-
-
 
 static int driver_send_command(struct sdhci_host *host)
 {
@@ -1138,10 +1145,9 @@ void bht_load(struct mmc_host *mmc_host, struct mmc_card *card)
 	bht_update_cfg(mmc_host,card,gg_sw_def,sizeof(gg_sw_def));
     }
 }
-#endif
-
 
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 /*
  * Handle the detection and initialisation of a card.
  *
@@ -1200,12 +1206,11 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 	}
 
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
-#ifdef IC_ADD_FUNCTION
 	{
    		 bht_load(host,card);
 	}
-#endif
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 	/*
 	 * handling only for cards supporting DSR and hosts requesting
 	 * DSR configuration
@@ -1232,6 +1237,7 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 		if (err)
 			goto free_card;
 	} else {
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 		/*
 		 * Switch to wider bus (if supported).
@@ -1244,9 +1250,8 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 
 			mmc_set_bus_width(host, MMC_BUS_WIDTH_4);
 		}
-		#ifdef IC_ADD_FUNCTION
 		mmc_app_acmd42(card);
-		#endif
+
 		/*
 		 * Attempt to change to high-speed (if supported)
 		 */
@@ -1326,9 +1331,9 @@ static void mmc_sd_detect(struct mmc_host *host)
 		pm_runtime_put_autosuspend(&host->card->dev);
 		return;
 	}
-	//sdcard is damaged during hot plug pressure test --sunsiyuan@wind-mobi.com modify at 20180627 begin
-	mmc_power_up(host,host->ocr_avail);
-	//sdcard is damaged during hot plug pressure test --sunsiyuan@wind-mobi.com modify at 20180627 end
+
+	mmc_power_up(host, host->ocr_avail);
+
 	/*
 	 * Just check if our card has been removed.
 	 */
@@ -1407,7 +1412,10 @@ static int mmc_sd_suspend(struct mmc_host *host)
 	if (!err) {
 		pm_runtime_disable(&host->card->dev);
 		pm_runtime_set_suspended(&host->card->dev);
-	}
+	/* if suspend fails, force mmc_detect_change during resume */
+	} else if (mmc_bus_manual_resume(host))
+		host->ignore_bus_resume_flags = true;
+
 	MMC_TRACE(host, "%s: Exit err: %d\n", __func__, err);
 
 	return err;
@@ -1637,7 +1645,6 @@ int mmc_attach_sd(struct mmc_host *host)
 	}
 #else
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
-#ifdef IC_ADD_FUNCTION
 	 if (  sdhci_bht_target_host(host))
 	 {
 		 int retries = 2;
@@ -1667,11 +1674,6 @@ int mmc_attach_sd(struct mmc_host *host)
 	if (err)
 		goto err;
 	 }
-#else
-	err = mmc_sd_init_card(host, rocr, NULL);
-	if (err)
-		goto err;
-#endif
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
 #endif
 

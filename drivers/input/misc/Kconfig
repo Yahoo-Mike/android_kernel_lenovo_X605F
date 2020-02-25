@@ -12,14 +12,6 @@ menuconfig INPUT_MISC
 
 if INPUT_MISC
 # fengnan@wind-mobi.com add 20180404 begin
-config INPUT_SX9310
-	tristate "SX9310_SAR_sensor"
-	depends on I2C
-	default y
-	help 
-	  Say Y to enable the SAR detection application, if N here not to use the 
-	  this SAR sensor
-
 config INPUT_SX9325
 	tristate "SX9325_SAR_sensor"
 	depends on I2C
@@ -36,6 +28,7 @@ config INPUT_SXT316
 	  Say Y to enable the SAR detection application, if N here not to use the 
 	  this SAR sensor
 # fengnan@wind-mobi.com add 20180404 end
+
 config INPUT_88PM860X_ONKEY
 	tristate "88PM860x ONKEY support"
 	depends on MFD_88PM860X
@@ -395,6 +388,17 @@ config INPUT_KEYCHORD
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called keychord.
+
+config STMVL53L0X
+        tristate "STM VL53L0X Ranging Sensor"
+        depends on I2C
+        help
+	  Say Y here if you want to enable the key chord driver
+          This is a Time-of-Flight (ToF) laser-ranging sensor, provide
+	  the distance from obstacle.
+
+	  To compile this driver as a module, choose M here: the module will
+	  be called vl5310x.
 
 config INPUT_KEYSPAN_REMOTE
 	tristate "Keyspan DMR USB remote control"

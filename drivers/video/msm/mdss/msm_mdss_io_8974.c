@@ -1084,6 +1084,7 @@ static void mdss_dsi_8996_phy_config(struct mdss_dsi_ctrl_pdata *ctrl)
 		/* modify begin by zhangchaofan@wind-mobi.com, 2018-04-03 */
 		MIPI_OUTP(base + 0x14, 0x00ff);	/* fixed */
 		/* modify end by zhangchaofan@wind-mobi.com, 2018-04-03 */
+
 		/* phy timing, 8 * 5 */
 		cnt = 8;
 		ln_off = cnt * ln;

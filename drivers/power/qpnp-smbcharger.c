@@ -474,6 +474,7 @@ enum sw_pcb_status {
 #define NUM_REWRITE              3
 static int rewrite_num = NUM_REWRITE;//make sure the usb current is setted to the register
 //wangpengpeng@wind-mobi.com end at 20180424
+
 static int smbchg_debug_mask;
 module_param_named(
 	debug_mask, smbchg_debug_mask, int, S_IRUSR | S_IWUSR
@@ -538,6 +539,7 @@ static struct input_dev *input_dev;
 static void pogo_report_key(int key_code);
 static int register_input_key(void);
 //wangpengpeng@wind-mobi.com end at 20180418
+
 #define pr_smb(reason, fmt, ...)				\
 	do {							\
 		if (smbchg_debug_mask & (reason))		\
@@ -553,11 +555,13 @@ static int register_input_key(void);
 		else							\
 			pr_debug_ratelimited(fmt, ##__VA_ARGS__);	\
 	} while (0)
+
 //wangpengpeng@wind-mobi.com begin at 20180420
 extern struct thermal_zone_device *pcb_tz;
 extern int wind_thermal_get_temp(struct thermal_zone_device *thermal);
 extern int fake_pcb_temp;
 //wangpengpeng@wind-mobi.com end at 20180420
+
 static int smbchg_read(struct smbchg_chip *chip, u8 *val,
 			u16 addr, int count)
 {
@@ -1140,6 +1144,7 @@ static int get_prop_batt_capacity(struct smbchg_chip *chip)
 		pr_smb(PR_STATUS, "Couldn't get capacity rc = %d\n", rc);
 		capacity = DEFAULT_BATT_CAPACITY;
 	}
+
 	//zhangchao@wind-mobi.com 20180226 begin
 	chip->ext_fg_psy = power_supply_get_by_name("ex_fg");
 	if (chip->ext_fg_psy) {
@@ -1149,6 +1154,7 @@ static int get_prop_batt_capacity(struct smbchg_chip *chip)
 		pr_err("wind-log capacity = %d\n",capacity);
 	}
 	//zhangchao@wind-mobi.com 20180226 end
+
 	return capacity;
 }
 
@@ -1156,6 +1162,7 @@ static int get_prop_batt_capacity(struct smbchg_chip *chip)
 static int get_prop_batt_temp(struct smbchg_chip *chip)
 {
 	int temp, rc;
+
 	union power_supply_propval val;     //zhangchao@wind-mobi.com modify at 20180301
 	//zhouying01@wind-mobi.com 20180410 begin
 #ifdef SW_JEITA
@@ -1169,6 +1176,7 @@ static int get_prop_batt_temp(struct smbchg_chip *chip)
 		pr_smb(PR_STATUS, "Couldn't get temperature rc = %d\n", rc);
 		temp = DEFAULT_BATT_TEMP;
 	}
+
 	//zhangchao@wind-mobi.com 20180301 begin
 	chip->ext_fg_psy = power_supply_get_by_name("ex_fg");
 	if (chip->ext_fg_psy) {
@@ -1178,6 +1186,7 @@ static int get_prop_batt_temp(struct smbchg_chip *chip)
 		pr_err("wind-log temp = %d\n",temp);
 	}
 	//zhangchao@wind-mobi.com 20180301 end
+
 	return temp;
 }
 
@@ -1246,6 +1255,7 @@ static int get_prop_batt_voltage_now(struct smbchg_chip *chip)
 		pr_smb(PR_STATUS, "Couldn't get voltage rc = %d\n", rc);
 		uv = DEFAULT_BATT_VOLTAGE_NOW;
 	}
+
 	//zhangchao@wind-mobi.com 20180301 begin
 	chip->ext_fg_psy = power_supply_get_by_name("ex_fg");
 	if (chip->ext_fg_psy) {
@@ -1255,6 +1265,7 @@ static int get_prop_batt_voltage_now(struct smbchg_chip *chip)
 		pr_err("wind-log voltage_now = %d\n",uv);
 	}
 	//zhangchao@wind-mobi.com 20180301 end
+
 	return uv;
 }
 
@@ -4055,31 +4066,11 @@ static void check_battery_type(struct smbchg_chip *chip)
 	}
 }
 
-/* YM 09/01/2020 - no MM8013 chip on M10 (remove this code from P10 source)
-extern int g_otg_flag_pin; //zhangchao@wind-mobi.com modify for otg 20180305
-extern int g_pogo_en_pin; //zhangchao@wind-mobi.com modify for otg 20180312
-*/
 static int smbchg_otg_regulator_enable(struct regulator_dev *rdev)
 {
 	int rc = 0;
 	struct smbchg_chip *chip = rdev_get_drvdata(rdev);
 
-/* YM 09/01/2020 - no MM8013 chip on M10 (remove this code from P10 source)
-	//zhangchao@wind-mobi.com 20180305 begin
-	if(gpio_is_valid(g_otg_flag_pin)){
-		gpio_request(g_otg_flag_pin,"ti,otg_flag");
-		gpio_direction_output(g_otg_flag_pin,1);
-		pr_err("wind-log otg_flag hign\n");
-	}
-	//zhangchao@wind-mobi.com 20180305 end
-	//zhangchao@wind-mobi.com 20180312 begin
-	if(gpio_is_valid(g_pogo_en_pin)){
-		gpio_request(g_pogo_en_pin,"ti,pogo_en");
-		gpio_direction_output(g_pogo_en_pin,1);
-		pr_err("wind-log pogo_en hign\n");
-	}
-	//zhangchao@wind-mobi.com 20180312 end
-*/
 	chip->otg_retries = 0;
 	chip->chg_otg_enabled = true;
 	rc = configure_icl_control(chip, ICL_BUF_SS_DONE_VAL);
@@ -4112,23 +4103,6 @@ static int smbchg_otg_regulator_disable(struct regulator_dev *rdev)
 	int rc = 0;
 	struct smbchg_chip *chip = rdev_get_drvdata(rdev);
 
-/* YM 09/01/2020 - no MM8013 chip on M10 (remove this code from P10 source)
-
-	//zhangchao@wind-mobi.com 20180305 begin
-	if(gpio_is_valid(g_otg_flag_pin)){
-		gpio_request(g_otg_flag_pin,"ti,otg_flag");
-		gpio_direction_output(g_otg_flag_pin,0);
-		pr_err("wind-log otg_flag low\n");
-	}
-	//zhangchao@wind-mobi.com 20180305 end
-	//zhangchao@wind-mobi.com 20180312 begin
-	if(gpio_is_valid(g_pogo_en_pin)){
-		gpio_request(g_pogo_en_pin,"ti,pogo_en");
-		gpio_direction_output(g_pogo_en_pin,0);
-		pr_err("wind-log pogo_en low\n");
-	}
-	//zhangchao@wind-mobi.com 20180312 end
-*/
 	if (!chip->otg_pinctrl) {
 		rc = smbchg_masked_write(chip, chip->bat_if_base + CMD_CHG_REG,
 				OTG_EN_BIT, 0);
@@ -4828,6 +4802,7 @@ static int smbchg_change_usb_supply_type(struct smbchg_chip *chip,
 	 * modes, skip all BC 1.2 current if external typec is supported.
 	 * Note: for SDP supporting current based on USB notifications.
 	 */
+
 	//zhangchao@wind-mobi.com 20180307 begin
 	/*if (chip->typec_psy && (type != POWER_SUPPLY_TYPE_USB))
 		current_limit_ma = chip->typec_current_ma;
@@ -5073,12 +5048,14 @@ static void handle_usb_removal(struct smbchg_chip *chip)
 		chip->typec_current_ma = 0;
 	/* cancel/wait for hvdcp pending work if any */
 	cancel_delayed_work_sync(&chip->hvdcp_det_work);
+
 	//zhouying01@wind-mobi.com 20180410 begin
 #ifdef SW_JEITA
 	cancel_delayed_work_sync(&chip->update_temp_work);
 #endif
 	//zhouying01@wind-mobi.com 20180410 end
 	rewrite_num = NUM_REWRITE;//wangpengpeng@wind-mobi.com reset rewrite_num at 20180503
+
 	smbchg_relax(chip, PM_DETECT_HVDCP);
 	smbchg_change_usb_supply_type(chip, POWER_SUPPLY_TYPE_UNKNOWN);
 
@@ -5138,28 +5115,14 @@ static bool is_usbin_uv_high(struct smbchg_chip *chip)
 	return reg &= USBIN_UV_BIT;
 }
 
+/******************************** start Lenovo code ********************************/
 //zhouying01@wind-mobi.com 20180410 begin
 #ifdef SW_JEITA
-/*static bool is_charger_available(struct smbchg_chip *chip)
-{
-	if (!chip->batt_psy)
-		chip->batt_psy = power_supply_get_by_name("battery");
-
-	if (!bq->batt_psy)
-		return false;
-
-	return true;
-}*/
 
 static int set_prop_sw_jeita_vol_cur(struct smbchg_chip *chip, int vol_mv, int cur_ma)
 {
 	int rc = 0;
 	union power_supply_propval prop = {0, };
-
-	//if (!is_charger_available(bq)) {
-	//	printk(KERN_ERR "zy: Charger not available yet!\n");
-	//	return -EINVAL;
-	//}
 
 	chip->batt_psy.get_property(&chip->batt_psy, POWER_SUPPLY_PROP_VOLTAGE_MAX, &prop);
 	printk(KERN_ERR "zy: GET VOLTAGE MAX %d SET VOLTAGE MAX %d \n", prop.intval, vol_mv);
@@ -5440,6 +5403,8 @@ static void smbchg_update_temp_work(struct work_struct *work)
 }
 #endif
 //zhouying01@wind-mobi.com 20180410 end
+
+/******************************** end Lenovo code ********************************/
 
 #define HVDCP_NOTIFY_MS		2500
 static void handle_usb_insertion(struct smbchg_chip *chip)
@@ -6668,6 +6633,7 @@ static int smbchg_battery_set_property(struct power_supply *psy,
 		chip->fake_battery_soc = val->intval;
 		power_supply_changed(&chip->batt_psy);
 		break;
+
 	//zhouying01@wind-mobi.com 20180410 begin
 #ifdef SW_JEITA
 	case POWER_SUPPLY_PROP_TEMP:
@@ -6676,6 +6642,7 @@ static int smbchg_battery_set_property(struct power_supply *psy,
 		break;
 #endif
 	//zhouying01@wind-mobi.com 20180410 end
+
 	case POWER_SUPPLY_PROP_SYSTEM_TEMP_LEVEL:
 		smbchg_system_temp_level_set(chip, val->intval);
 		break;
@@ -6732,11 +6699,13 @@ static int smbchg_battery_set_property(struct power_supply *psy,
 			power_supply_changed(&chip->batt_psy);
 		}
 		break;
+
 	//zhangchao@wind-mobi.com add for charger type 20180602 begin
 	case POWER_SUPPLY_PROP_CHARGER_TYPE:
 		chip->usb_supply_type = val->intval;
 		break;
 	//zhangchao@wind-mobi.com add for charger type 20180602 end
+
 	default:
 		return -EINVAL;
 	}
@@ -6765,6 +6734,7 @@ static int smbchg_battery_is_writeable(struct power_supply *psy,
 	//zhangchao@wind-mobi.com add for charger type 20180602 begin
 	case POWER_SUPPLY_PROP_CHARGER_TYPE:
 	//zhangchao@wind-mobi.com add for charger type 20180602 end
+
 		rc = 1;
 		break;
 	default:
@@ -7222,6 +7192,7 @@ static irqreturn_t dcin_uv_handler(int irq, void *_chip)
 {
 	struct smbchg_chip *chip = _chip;
 	bool dc_present = is_dc_present(chip);
+
 	//zhangchao@wind-mobi.com 20180721 begin
 	int rc;
 	g_dc_present = dc_present;              //zhangchao@wind-mobi.com modify for OTG OCP at 20180607
@@ -7254,6 +7225,7 @@ static irqreturn_t dcin_uv_handler(int irq, void *_chip)
 	}
 
 	smbchg_wipower_check(chip);
+
 	//wangpengpeng@wind-mobi.com begin at 20180418
 	if(dc_present){
 		pogo_report_key(KEY_POGODOWN);
@@ -7261,6 +7233,7 @@ static irqreturn_t dcin_uv_handler(int irq, void *_chip)
 		pogo_report_key(KEY_POGOUP);
 	}
 	//wangpengpeng@wind-mobi.com end at 20180418
+
 	return IRQ_HANDLED;
 }
 
@@ -7311,7 +7284,9 @@ out:
  */
 #define ICL_MODE_MASK		SMB_MASK(5, 4)
 #define ICL_MODE_HIGH_CURRENT	0
+
 extern int g_boost_en_pin;   //zhangchao@wind-mobi.com 20180516 modify for OTG and POGO
+
 static irqreturn_t usbin_uv_handler(int irq, void *_chip)
 {
 	struct smbchg_chip *chip = _chip;
@@ -7325,6 +7300,7 @@ static irqreturn_t usbin_uv_handler(int irq, void *_chip)
 		goto out;
 	}
 	//zhangchao@wind-mobi.com 20180516 end
+
 	rc = smbchg_read(chip, &reg, chip->usb_chgpth_base + RT_STS, 1);
 	if (rc) {
 		pr_err("could not read rt sts: %d", rc);
@@ -7422,6 +7398,7 @@ static irqreturn_t src_detect_handler(int irq, void *_chip)
 		goto out;
 	}
 	//zhangchao@wind-mobi.com 20180516 end
+
 	pr_smb(PR_STATUS,
 		"%s chip->usb_present = %d usb_present = %d src_detect = %d hvdcp_3_det_ignore_uv=%d\n",
 		chip->hvdcp_3_det_ignore_uv ? "Ignoring":"",
@@ -7982,6 +7959,7 @@ static int smbchg_hw_init(struct smbchg_chip *chip)
 		rc = smbchg_sec_masked_write(chip,
 			chip->chgr_base + CHGR_CCMP_CFG,
 			JEITA_TEMP_HARD_LIMIT_BIT|BIT(2)|BIT(3)|BIT(1)|BIT(0),//wangpengpeng@wind-mobi.com modify at 20180514
+
 			chip->jeita_temp_hard_limit
 			? 0 : JEITA_TEMP_HARD_LIMIT_BIT);
 		if (rc < 0) {
@@ -8151,6 +8129,7 @@ static int smbchg_hw_init(struct smbchg_chip *chip)
 
 	//zhangchao@wind-mobi.com 20180516 for OTG and POGO begin
 	pr_err("wind-log PMI OTG boost chip->otg_pinctrl = %d\n",chip->otg_pinctrl);
+
 	if (chip->otg_pinctrl) {
 		/* configure OTG enable to pin control active low */
 		rc = smbchg_sec_masked_write(chip, chip->otg_base + OTG_CFG,
@@ -9170,6 +9149,7 @@ static int smbchg_probe(struct spmi_device *spmi)
 			smbchg_parallel_usb_en_work);
 	INIT_DELAYED_WORK(&chip->vfloat_adjust_work, smbchg_vfloat_adjust_work);
 	INIT_DELAYED_WORK(&chip->hvdcp_det_work, smbchg_hvdcp_det_work);
+
 	//zhouying01@wind-mobi.com 20180410 begin
 #ifdef SW_JEITA
 	INIT_DELAYED_WORK(&chip->update_temp_work, smbchg_update_temp_work);
@@ -9324,12 +9304,14 @@ static int smbchg_probe(struct spmi_device *spmi)
 			chip->revision[ANA_MAJOR], chip->revision[ANA_MINOR],
 			get_prop_batt_present(chip),
 			chip->dc_present, chip->usb_present);
+
 	//wangpengpeng@wind-mobi.com begin at 20180418
 	err = register_input_key();
 	if(err){
 		pr_err("failed to register_input_key\n");
 	}
 	//wangpengpeng@wind-mobi.com end at 20180418
+
 	return 0;
 
 unregister_led_class:

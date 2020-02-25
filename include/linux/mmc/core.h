@@ -90,6 +90,7 @@ struct mmc_data {
 	//BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 	u32  err_int_mask;
 	//BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 #define MMC_DATA_WRITE	(1 << 8)
 #define MMC_DATA_READ	(1 << 9)
 #define MMC_DATA_STREAM	(1 << 10)

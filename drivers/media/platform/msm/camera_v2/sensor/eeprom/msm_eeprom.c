@@ -318,9 +318,8 @@ ERROR:
 	memset(data, 0, sizeof(*data));
 	return rc;
 }
-//##***wangzhancai@wind-mobi.com  --20180316 start ***
 
-#if 1
+//##***wangzhancai@wind-mobi.com  --20180316 start ***
 
 static int hynix_hi556_otp_readmode_initial(struct msm_eeprom_ctrl_t *e_ctrl, uint8_t *memptr)
 {
@@ -368,8 +367,9 @@ static int hynix_hi556_otp_readmode_initial(struct msm_eeprom_ctrl_t *e_ctrl, ui
 	CDBG("\r\n   hi556 %s read success\n", __func__);
 	return 0x556;
 }
-#endif
+
 //##***wangzhancai@wind-mobi.com  --20180316 end ***
+
 /**
   * eeprom_parse_memory_map - Parse mem map
   * @e_ctrl:	ctrl structure
@@ -399,14 +399,13 @@ static int eeprom_parse_memory_map(struct msm_eeprom_ctrl_t *e_ctrl,
 		kzalloc(e_ctrl->cal_data.num_data, GFP_KERNEL);
 	if (!e_ctrl->cal_data.mapdata)
 		return -ENOMEM;
+
 //##***wangzhancai@wind-mobi.com  --20180316 start ***
-#if 1
 	rc = hynix_hi556_otp_readmode_initial(e_ctrl, e_ctrl->cal_data.mapdata);
 	if (rc == 0x556){
 		rc = 0;
 		goto success;
 	}
-#endif
 //##***wangzhancai@wind-mobi.com  --20180316 end ***
 
 	memptr = e_ctrl->cal_data.mapdata;
@@ -545,9 +544,8 @@ static int eeprom_parse_memory_map(struct msm_eeprom_ctrl_t *e_ctrl,
 	memptr = e_ctrl->cal_data.mapdata;
 	for (i = 0; i < e_ctrl->cal_data.num_data; i++)
 		CDBG("memory_data[%d] = 0x%X\n", i, memptr[i]);
-#if 1
+
 success:
-#endif
 	return rc;
 
 clean_up:

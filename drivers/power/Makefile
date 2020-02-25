@@ -83,7 +83,4 @@ obj-$(CONFIG_MSM_BCL_CTL)	+= msm_bcl.o
 obj-$(CONFIG_MSM_BCL_PERIPHERAL_CTL) += bcl_peripheral.o
 obj-$(CONFIG_POWER_RESET)	+= reset/
 obj-$(CONFIG_ARCH_MSM)		+= qcom/
-# YM 09/01/2020 - M10 does not have MM8013 chip
-##zhangchao@wind-mobi.com 20180226 begin	  
-#obj-$(CONFIG_MM8013_FG)	+= bq27426_fg_MM8013.o
-##zhangchao@wind-mobi.com 20180226 end	  
+

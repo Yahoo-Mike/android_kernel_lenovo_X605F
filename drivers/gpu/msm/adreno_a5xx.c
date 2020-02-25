@@ -2216,7 +2216,7 @@ static int a5xx_microcode_load(struct adreno_device *adreno_dev)
 		desc.args[1] = 13;
 		desc.arginfo = SCM_ARGS(2);
 
-		ret = scm_call2(SCM_SIP_FNID(SCM_SVC_BOOT, 0xA), &desc);
+		ret = scm_call2_atomic(SCM_SIP_FNID(SCM_SVC_BOOT, 0xA), &desc);
 		if (ret) {
 			pr_err("SCM resume call failed with error %d\n", ret);
 			return ret;
@@ -2441,8 +2441,8 @@ static int a5xx_rb_start(struct adreno_device *adreno_dev,
 	adreno_writereg(adreno_dev, ADRENO_REG_CP_RB_CNTL,
 		A5XX_CP_RB_CNTL_DEFAULT);
 
-	adreno_writereg(adreno_dev, ADRENO_REG_CP_RB_BASE,
-			rb->buffer_desc.gpuaddr);
+	adreno_writereg64(adreno_dev, ADRENO_REG_CP_RB_BASE,
+			ADRENO_REG_CP_RB_BASE_HI, rb->buffer_desc.gpuaddr);
 
 	ret = a5xx_microcode_load(adreno_dev);
 	if (ret)

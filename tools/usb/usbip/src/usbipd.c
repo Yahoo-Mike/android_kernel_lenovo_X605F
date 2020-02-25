@@ -1,4 +1,4 @@
-/*
+s/*
  * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
  *               2005-2007 Takahiro Hirofuchi
  *
@@ -453,7 +453,7 @@ static void set_signal(void)
 	sigaction(SIGTERM, &act, NULL);
 	sigaction(SIGINT, &act, NULL);
 	act.sa_handler = SIG_IGN;
-	sigaction(SIGCLD, &act, NULL);
+	sigaction(SIGCHLD, &act, NULL);
 }
 
 static const char *pid_file;

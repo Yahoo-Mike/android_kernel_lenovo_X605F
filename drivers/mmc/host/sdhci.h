@@ -461,6 +461,7 @@ extern int sdhci_runtime_resume_host(struct sdhci_host *host);
 #endif
 
 void sdhci_cfg_irq(struct sdhci_host *host, bool enable, bool sync);
+
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
 static inline bool sdhci_bht_target_host(struct sdhci_host *host) {
 return 0 == strcmp( host->hw_name,"7864900.sdhci");
@@ -472,4 +473,5 @@ return 0 == strcmp( host->hw_name,"7864900.sdhci");
   0x00020006, 0x40000400, 0x12200310, 0x4A414177}
 
 //BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
+
 #endif /* __SDHCI_HW_H */

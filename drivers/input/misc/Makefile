@@ -86,17 +86,11 @@ endif
 obj-$(CONFIG_INPUT_IDEAPAD_SLIDEBAR)	+= ideapad_slidebar.o
 obj-$(CONFIG_INPUT_PIXART_OTS_PAT9125_SWITCH)	+= ots_pat9125/
 # fengnan@wind-mobi.com add 20180621 begin
-ifeq ($(WIND_INPUT_SX9310),true)
-#obj-$(CONFIG_INPUT_SX9310)		+= sx9310.o
-endif
 ifeq ($(WIND_INPUT_SX9325),true)
 obj-$(CONFIG_INPUT_SX9325)		+= sx9320.o
 endif
 ifeq ($(WIND_INPUT_SXT316),true)
 obj-$(CONFIG_INPUT_SXT316)		+= sxT316.o
-endif
-ifeq ($(WIND_FACTORY_CLOSE_SAR),true)
-	EXTRA_CFLAGS += -DFACTORY_CLOSE_SAR
 endif
 # fengnan@wind-mobi.com add 20180621 end
 
@@ -104,3 +98,4 @@ endif
 obj-y					+= fpc_irq.o
 obj-y					+= fpc1020_platform_tee.o
 # caisijing@wind-mobi.com 20180308 end
+obj-$(CONFIG_STMVL53L0X)	+= vl53l0x/

@@ -2319,7 +2319,6 @@ static int64_t get_batt_id(unsigned int battery_id_uv, u8 bid_info)
 	battery_id_ohm = div_u64(battery_id_uv, bias_ua[bid_info & 0x3]);
 
 	//zhangchao@wind-mobi.com modify for no battery_ID_pin 20180301 begin
-	//return battery_id_ohm;
 	return 100000;
 	//zhangchao@wind-mobi.com modify for no battery_ID_pin 20180301 end
 }
@@ -5307,7 +5306,6 @@ static irqreturn_t fg_batt_missing_irq_handler(int irq, void *_chip)
 			pr_info("battery missing, clearing cycle counters\n");
 		clear_cycle_counter(chip);
 		mutex_unlock(&chip->cyc_ctr.lock);
-        pm_power_off();//wangpengpeng@wind-mobi.com ----if no battery,shut down----add at 20180420
 	} else {
 		if (!chip->use_otp_profile)
 			fg_handle_battery_insertion(chip);
