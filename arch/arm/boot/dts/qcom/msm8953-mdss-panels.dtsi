@@ -25,6 +25,7 @@
 #include "dsi-panel-lt8912-1080p-video.dtsi"
 #include "dsi-panel-lgd-incell-sw49106-fhd-video.dtsi"
 #include "dsi-panel-focaltech-1080p-video.dtsi"  //sunjingtao@wind-mobi.com add at 20180306
+#include "dsi-panel-hx83100a-800p-video.dtsi"
 
 &soc {
 	dsi_panel_pwr_supply: dsi_panel_pwr_supply {

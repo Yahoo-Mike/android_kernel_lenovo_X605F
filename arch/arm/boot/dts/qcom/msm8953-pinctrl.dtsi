@@ -492,8 +492,23 @@
 					bias-pull-down; /* pull down */
 				};
 			};
-		};
 		/* caisijing@wind-mobi.com 20180202 modify end */
+
+			mdss_dsi_gpio: mdss_dsi_gpio {
+				mux {
+					pins = "gpio141";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio141";
+					drive-strength = <8>;
+					bias-pull-down;
+					output-low;
+				};
+			};
+
+		};
 
 		pmx_mdss_te {
 			mdss_te_active: mdss_te_active {
