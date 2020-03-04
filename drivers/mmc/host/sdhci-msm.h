@@ -216,6 +216,11 @@ struct sdhci_msm_host {
 	bool tuning_in_progress;
 	bool core_3_0v_support;
 	bool pltfm_init_done;
+	//BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 begin
+	int sdr50_notuning_sela_inject_flag;
+	int sdr50_notuning_crc_error_flag;
+	u32 sdr50_notuning_sela_rx_inject;
+	//BH201LN driver--sunsiyuan@wind-mobi.com modify at 20180326 end
 };
 
 extern char *saved_command_line;
