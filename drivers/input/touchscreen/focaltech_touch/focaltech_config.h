@@ -153,6 +153,12 @@
 #define FTS_CHARGER_EN                          0
 
 /*
+ * Proximity sensor
+ * default: disable
+ */
+#define FTS_PSENSOR_EN                          0
+
+/*
  * Nodes for tools, please keep enable
  */
 #define FTS_SYSFS_NODE_EN                       1
