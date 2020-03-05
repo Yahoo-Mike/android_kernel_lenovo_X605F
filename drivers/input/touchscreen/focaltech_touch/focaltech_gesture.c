@@ -186,6 +186,7 @@ static ssize_t fts_gesture_show(struct device *dev, struct device_attribute *att
 static ssize_t fts_gesture_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
 {
     struct input_dev *input_dev = fts_data->input_dev;
+
     mutex_lock(&input_dev->mutex);
     if (FTS_SYSFS_ECHO_ON(buf)) {
         FTS_INFO("[GESTURE]enable gesture");
@@ -291,7 +292,16 @@ static void fts_gesture_report(struct input_dev *input_dev, int gesture_id)
 	        gesture = SWIPE_Y_DOWN;
 	        break;
 	    case GESTURE_DOUBLECLICK:
-	        gesture = DOUBLE_TAP;
+
+		// Yahoo-Mike 5/3/2020 - DT2W
+		FTS_INFO("[GESTURE] DT2W gesture.");
+		input_report_key(input_dev, KEY_POWER, 1);
+		input_sync(input_dev);
+		input_report_key(input_dev, KEY_POWER, 0);
+		input_sync(input_dev);
+		gesture = -1;	// do not process again
+
+		//gesture = DOUBLE_TAP;
 	        break;
 	    case GESTURE_O:
 	        gesture = UNICODE_O;
