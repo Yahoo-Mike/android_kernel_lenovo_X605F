@@ -24,8 +24,3 @@ config MSM_MCU_TIME_SYNC
          Say Y here if you want to get mcu and apq8009 data transfer
          with gpio.
 
-#sunjingtao@wind-mobi.com add for hardware info at 20180328 begin
-config HARDWARE_INFO
-	bool "HARDWARE INFO driver  Module"
-	default n
-#sunjingtao@wind-mobi.com add for hardware info at 20180328 end

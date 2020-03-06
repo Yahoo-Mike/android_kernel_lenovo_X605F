@@ -53,13 +53,6 @@
 #define FTS_I2C_VTG_MAX_UV                  1800000
 #endif
 
-//sunjingtao@wind-mobi.com add for hardware info at 20180328 begin
-#if CONFIG_HARDWARE_INFO
-extern char *tp_name;
-extern u8 ctp_fw_version;
-#endif
-//sunjingtao@wind-mobi.com add for hardware info at 20180328 end
-
 int charge_flag = 0;  //sunjingtao@wind-mobi.com add at 20180801
 int headset_flag = 0;//sunjingtao@wind-mobi.com add at 20180801
 
@@ -1484,12 +1477,7 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
     ts_data->early_suspend.resume = fts_ts_late_resume;
     register_early_suspend(&ts_data->early_suspend);
 #endif
-//sunjingtao@wind-mobi.com add for hardware info at 20180328 begin
-#if CONFIG_HARDWARE_INFO
-	fts_i2c_read_reg(client, FTS_REG_FW_VER, &ctp_fw_version);
-	tp_name = "FOCALTECH";
-#endif
-//sunjingtao@wind-mobi.com add for hardware info at 20180328 end
+
     FTS_FUNC_EXIT();
     return 0;
 

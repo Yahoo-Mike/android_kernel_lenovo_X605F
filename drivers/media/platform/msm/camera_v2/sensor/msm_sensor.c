@@ -21,11 +21,6 @@
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
 
-//##***wangzhancai@wind-mobi.com  --20180331 start ***
-extern char *main_camera;
-extern char *sub_camera;
-//##***wangzhancai@wind-mobi.com  --20180331 end ***
-
 static struct msm_camera_i2c_fn_t msm_sensor_cci_func_tbl;
 static struct msm_camera_i2c_fn_t msm_sensor_secure_func_tbl;
 
@@ -242,106 +237,9 @@ static uint16_t msm_sensor_id_by_mask(struct msm_sensor_ctrl_t *s_ctrl,
 	return sensor_id;
 }
 
-//##***wangzhancai@wind-mobi.com  --20180331 start ***
-
-static int msm_hardware_device_info(struct msm_sensor_ctrl_t *s_ctrl,
-				uint16_t chipid,
-				const char *sensor_name)
-{
-	int rc = 0;
-	uint8_t groupid = 0;
-	uint8_t moduleid = 0;
-	struct msm_camera_i2c_reg_array ov8856_readotp_init_start[] = {
-                 {0x0100, 0x01, 0x0000},
-                 {0x5001, 0x02, 0x0000},
-		 {0x3d84, 0xc0, 0x0000},
-		 {0x3d88, 0x70, 0x0000},
-		 {0x3d89, 0x10, 0x0000},
-		 {0x3d8a, 0x72, 0x0000},
-		 {0x3d8b, 0x0a, 0x0000},
-		 {0x3d81, 0x01, 0x000a},
-	};
-	struct msm_camera_i2c_reg_setting ov8856_otp_read_init_setting_start = {
-		.reg_setting = ov8856_readotp_init_start,
-		.size = ARRAY_SIZE(ov8856_readotp_init_start),
-		.addr_type = MSM_CAMERA_I2C_WORD_ADDR,
-		.data_type = MSM_CAMERA_I2C_BYTE_DATA,
-		.delay = 0,
-	};
-	struct msm_camera_i2c_reg_array ov8856_readotp_init_end[] = {
-		{0x5001, 0x0a, 0x0000},
-		{0x0100, 0x00, 0x0000},
-	};
-	struct msm_camera_i2c_reg_setting ov8856_otp_read_init_setting_end = {
-		.reg_setting = ov8856_readotp_init_end,
-		.size = ARRAY_SIZE(ov8856_readotp_init_end),
-		.addr_type = MSM_CAMERA_I2C_WORD_ADDR,
-		.data_type = MSM_CAMERA_I2C_BYTE_DATA,
-		.delay = 0,
-	};
-
-	struct msm_camera_i2c_client *sensor_i2c_client;
-	if (!s_ctrl) {
-		pr_err("%s:%d failed: %pK\n",
-			__func__, __LINE__, s_ctrl);
-		return -EINVAL;
-	}
-	sensor_i2c_client = s_ctrl->sensor_i2c_client;
-
-	if (0x885a == chipid) {
-		rc = sensor_i2c_client->i2c_func_tbl->i2c_write_table(sensor_i2c_client, &ov8856_otp_read_init_setting_start);
-		if (rc < 0){
-			pr_err("%s ov8856 start read otp init write init setting iic fail\n",__func__);
-			return -EINVAL;
-		}
-		rc = sensor_i2c_client->i2c_func_tbl->i2c_read_seq(sensor_i2c_client,0x7010, &groupid, 1);
-		if (rc < 0){
-			pr_err("%s ov8856 read otp init read group fail\n",__func__);
-			return -EINVAL;
-		}
-
-		groupid = groupid & 0xF0;
-		if(0x40 == (groupid & 0xC0)){
-			rc = sensor_i2c_client->i2c_func_tbl->i2c_read_seq(sensor_i2c_client,0x7011, &moduleid, 1);
-			if (rc < 0){
-				pr_err("%s ov8856 read  group1 fail\n",__func__);
-				return -EINVAL;
-			}
-		}else if(0x10 == (groupid & 0x30)){
-			rc = sensor_i2c_client->i2c_func_tbl->i2c_read_seq(sensor_i2c_client,0x710B, &moduleid, 1);
-			if (rc < 0){
-				pr_err("%s ov8856 read  group2 fail\n",__func__);
-				return -EINVAL;
-			}
-		}else {
-			pr_err("%s ov8856 no right otp group \n",__func__);
-		}
-		if(0x06 == moduleid){
-			main_camera = "ov8856_qtech";
-		}
-		else if(0x07 == moduleid){
-			main_camera = "ov8856_ofilm";
-		}
-		rc = sensor_i2c_client->i2c_func_tbl->i2c_write_table(sensor_i2c_client, &ov8856_otp_read_init_setting_end);
-		if (rc < 0){
-			pr_err("%s ov8856 end read otp init write init setting iic fail\n",__func__);
-			return -EINVAL;
-		}
-
-	}else if (0x5025 == chipid || 0x0556 == chipid) {
-		sub_camera = (char *)sensor_name;
-	}
-	pr_debug("%s: main_camera %s sub_camera %s  \n", __func__, main_camera,sub_camera);
-	return rc;
-}
-
-//##***wangzhancai@wind-mobi.com  --20180331 end ***
-
 int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 {
-//##***wangzhancai@wind-mobi.com  --20180331 start ***
-	int rc = 0,rc_add = 0;
-//##***wangzhancai@wind-mobi.com  --20180331 end ***
+	int rc = 0;
 	uint16_t chipid = 0;
 	struct msm_camera_i2c_client *sensor_i2c_client;
 	struct msm_camera_slave_info *slave_info;
@@ -378,12 +276,6 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 				__func__, chipid, slave_info->sensor_id);
 		return -ENODEV;
 	}
-//##***wangzhancai@wind-mobi.com  --20180331 start ***
-	if(main_camera == NULL || sub_camera == NULL){
-		rc_add = msm_hardware_device_info(s_ctrl,chipid,sensor_name);
-		pr_debug("%s rc_add = %d \n", __func__,rc_add);
-	}
-//##***wangzhancai@wind-mobi.com  --20180331 end ***
 	return rc;
 }
 
