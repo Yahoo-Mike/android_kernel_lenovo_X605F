@@ -74,17 +74,9 @@ static int32_t msm_sensor_driver_cmd(struct msm_sensor_init_t *s_init,
 	case CFG_SINIT_PROBE:
 		mutex_lock(&s_init->imutex);
 		s_init->module_init_status = 0;
-
-//wangzhancai@wind-mobi.com add delete camera androidboot mode ffbm 2018-07-31 start
-		if(NULL == strnstr(saved_command_line, "androidboot.mode=ffbm-01",strlen(saved_command_line)))
-		{
-		pr_err("%s androidboot mode not ffbm mode need driver probe", __func__);
 		rc = msm_sensor_driver_probe(cfg->cfg.setting,
 			&cfg->probed_info,
 			cfg->entity_name);
-		}
-//wangzhancai@wind-mobi.com add delete camera androidboot mode ffbm 2018-07-31 end
-
 		mutex_unlock(&s_init->imutex);
 		if (rc < 0)
 			pr_err("%s failed (non-fatal) rc %d", __func__, rc);

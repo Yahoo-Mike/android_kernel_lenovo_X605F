@@ -1242,14 +1242,6 @@ static int32_t msm_sensor_driver_platform_probe(struct platform_device *pdev)
 	int32_t rc = 0;
 	struct msm_sensor_ctrl_t *s_ctrl = NULL;
 
-//wangzhancai@wind-mobi.com add delete camera androidboot mode ffbm 2018-0731 start
-	if(NULL != strnstr(saved_command_line, "androidboot.mode=ffbm-01",strlen(saved_command_line)))
-	{
-		pr_err("%s androidboot mode is ffbm need return not probe", __func__);
-		return 0;
-	}
-//wangzhancai@wind-mobi.com add delete camera androidboot mode ffbm 2018-0731 end
-
 	/* Create sensor control structure */
 	s_ctrl = kzalloc(sizeof(*s_ctrl), GFP_KERNEL);
 	if (!s_ctrl)
