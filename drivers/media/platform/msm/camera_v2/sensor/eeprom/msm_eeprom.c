@@ -18,8 +18,6 @@
 #include "msm_cci.h"
 #include "msm_eeprom.h"
 
-#include <yahoo.h>
-
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
 
