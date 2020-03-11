@@ -18,6 +18,8 @@
 #include "msm_cci.h"
 #include "msm_eeprom.h"
 
+#include <yahoo.h>
+
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
 
@@ -319,56 +321,85 @@ ERROR:
 	return rc;
 }
 
-//##***wangzhancai@wind-mobi.com  --20180316 start ***
-
-static int hynix_hi556_otp_readmode_initial(struct msm_eeprom_ctrl_t *e_ctrl, uint8_t *memptr)
+/**
+  * hynix_sensor_init_for_otp - Hynix sensor read OTP data need init sensor
+  * sensor_name:            hi556      hi846
+  * sensor_id_reg_addr:    0x0F16     0x0F16
+  * sensor_id:             0x0556     0x4608
+  *
+  * Yahoo Mike 11/03/2020 - this code (and array values in the header file)
+  *			    are taken from kernel source for Lenovo Tab4, because
+  *			    the P10 source did not work properly.  This code fixes
+  * 			    issues the P10 source had with autofocus.
+  */
+static int hynix_hi556_otp_readmode_initial(struct msm_eeprom_ctrl_t *e_ctrl,struct msm_eeprom_memory_block_t *block)
 {
 	int rc = 0;
-	uint32_t snsid_addr = 0x0f16;
+	uint32_t snsid_addr = 0x0F16;
 	uint16_t sensor_id;
-	int i = 0;
+	int i;
+	uint8_t *memptr = block->mapdata;
+
+	CDBG("hi556 memptr = 0x%p\n", memptr);
+	if(block->mapdata == NULL)
+	CDBG("hi556 %s block->mapdata == NULL\n", __func__);	
+	CDBG("hi556 %s enter\n", __func__);
 	e_ctrl->i2c_client.addr_type = MSM_CAMERA_I2C_WORD_ADDR;
 	if (e_ctrl->i2c_client.cci_client) {
-			e_ctrl->i2c_client.cci_client->sid = 0x20;
+			e_ctrl->i2c_client.cci_client->sid =
+				0x50 >> 1;
+		CDBG("hi556 e_ctrl->i2c_client.cci_client->sid = 0x%x\n", e_ctrl->i2c_client.cci_client->sid );	
+		
 	} else if (e_ctrl->i2c_client.client) {
-			e_ctrl->i2c_client.client->addr = 0x20;
+			e_ctrl->i2c_client.client->addr =
+				0x50 >> 1;
+		CDBG("hi556 e_ctrl->i2c_client.client->addr = 0x%x\n", e_ctrl->i2c_client.client->addr );
 	}
+
 	rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_read(&(e_ctrl->i2c_client),
 			snsid_addr, &sensor_id, 2);
 	if (rc < 0) {
-		CDBG("\r\n LK hi556 <3>""%s: otp sensor id read failed\n", __func__);
-	}
-	msleep(20);
-	pr_err("\r\n LK hi556 %s: sensor_id = 0x%x \n", __func__, sensor_id);
-	if (sensor_id == 0x0556) {
-		CDBG("\r\n LK hi556%s:%d hi556 sensor otp", __func__, __LINE__);
-		rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_write_table(&(e_ctrl->i2c_client), &hi556_otp_read_init_setting);
-		rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_write_table(&(e_ctrl->i2c_client), &hi556_otp_read_init_setting_start);
-	}
-	else {
-		CDBG("\r\n LK hi556 %s:%d other sensor otp", __func__, __LINE__);
-		return -1;
-	}
-	if (rc < 0) {
-		CDBG("\r\n LK hi556 <3>""%s: otp read mode initial setting failed\n", __func__);
+		CDBG("hi556 <3>""%s: otp sensor id read failed\n", __func__);
 		return rc;
 	}
-	for(i = 0; i< 0x8f; i++){//0xA8F
-		e_ctrl->i2c_client.i2c_func_tbl->i2c_read_seq(&(e_ctrl->i2c_client),
-			0x0108, memptr, 1);
+	else{
+		CDBG(" %s:hi556 sensor id read sensor id success\n", __func__);
+	}
+	msleep(20);
+	pr_info("hi556 %s: sensor_id = 0x%x", __func__, sensor_id);
+	if (sensor_id == 0x0556)
+	{
+		CDBG("i556%s:%d hi556 sensor otp", __func__, __LINE__);
+		rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_write_table(&(e_ctrl->i2c_client), &hi556_otp_read_init_setting);
+		CDBG("hi556: rc1 = %d\n",rc );
+		rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_write_table(&(e_ctrl->i2c_client), &hi556_otp_read_init_setting_start);
+		CDBG("hi556: rc2 = %d\n",rc );
+	}
+	else
+	{
+		pr_err("hi556 %s:%d other sensor otp", __func__, __LINE__);
+		return -EPERM; // not permitted - device is not hynix hi556
+	}
+	if (rc < 0)
+	{
+		CDBG("hi556 <3>""%s: otp read mode initial setting failed\n", __func__);
+		return rc;
+	}
+	CDBG("hi556 %s:%d:num_data=%d\n", __func__, __LINE__,block->num_data);
+	for(i = 0; i< block->num_data; i++){
+		rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_read_seq(&(e_ctrl->i2c_client),0x108, memptr, 1);
+		if((i == 0) || (i == 0x34) || (i == 0X8F) || (i == 0XBF)){
+		CDBG("hi556 [%2x]=%2x\n", i, *memptr);}
+		if(rc < 0){
+			CDBG("hi556 rc1 =%d\n", rc);
+			return rc;		
+		}
 		memptr++;
 	}
-	rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_write_table(&(e_ctrl->i2c_client), &hi556_otp_read_init_setting_end);
-	if (rc < 0) {
-		CDBG("\r\n LK hi556 <3>""%s: otp read mode initial setting failed\n", __func__);
-		return rc;
-	}
-	msleep(20);
-	CDBG("\r\n   hi556 %s read success\n", __func__);
+	CDBG("hi556 %s read success\n", __func__);
 	return 0x556;
 }
 
-//##***wangzhancai@wind-mobi.com  --20180316 end ***
 
 /**
   * eeprom_parse_memory_map - Parse mem map
@@ -400,13 +431,11 @@ static int eeprom_parse_memory_map(struct msm_eeprom_ctrl_t *e_ctrl,
 	if (!e_ctrl->cal_data.mapdata)
 		return -ENOMEM;
 
-//##***wangzhancai@wind-mobi.com  --20180316 start ***
-	rc = hynix_hi556_otp_readmode_initial(e_ctrl, e_ctrl->cal_data.mapdata);
+	rc = hynix_hi556_otp_readmode_initial(e_ctrl, &e_ctrl->cal_data);
 	if (rc == 0x556){
 		rc = 0;
 		goto success;
 	}
-//##***wangzhancai@wind-mobi.com  --20180316 end ***
 
 	memptr = e_ctrl->cal_data.mapdata;
 	for (j = 0; j < eeprom_map_array->msm_size_of_max_mappings; j++) {
@@ -787,7 +816,7 @@ static int msm_eeprom_config(struct msm_eeprom_ctrl_t *e_ctrl,
 		if (e_ctrl->userspace_probe == 0) {
 			pr_err("%s:%d Eeprom already probed at kernel boot",
 				__func__, __LINE__);
-			rc = -EINVAL;
+			rc = -EALREADY; //return a special errno to inform that user space eeprom was already probed at kernel boot
 			break;
 		}
 		if (e_ctrl->cal_data.num_data == 0) {
@@ -1648,7 +1677,7 @@ static int msm_eeprom_config32(struct msm_eeprom_ctrl_t *e_ctrl,
 		if (e_ctrl->userspace_probe == 0) {
 			pr_err("%s:%d Eeprom already probed at kernel boot",
 				__func__, __LINE__);
-			rc = -EINVAL;
+			rc = -EALREADY; //return a special errno to inform that user space eeprom was already probed at kernel boot
 			break;
 		}
 		if (e_ctrl->cal_data.num_data == 0) {
@@ -1706,7 +1735,7 @@ static long msm_eeprom_subdev_fops_ioctl32(struct file *file, unsigned int cmd,
 
 #endif
 
-static int msm_eeprom_platform_probe(struct platform_device *pdev)
+static int msm_eeprom_platform_probe(struct platform_device *pdev) //major
 {
 	int rc = 0;
 	int j = 0;
@@ -1778,7 +1807,7 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 	}
 
 	rc = of_property_read_u32(of_node, "cell-index",
-		&pdev->id);
+		&pdev->id); // save id
 	CDBG("cell-index %d, rc %d\n", pdev->id, rc);
 	if (rc < 0) {
 		pr_err("failed rc %d\n", rc);
@@ -1796,9 +1825,9 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 	cci_client->cci_i2c_master = e_ctrl->cci_master;
 
 	rc = of_property_read_string(of_node, "qcom,eeprom-name",
-		&eb_info->eeprom_name);
+		&eb_info->eeprom_name); // empty not read
 	CDBG("%s qcom,eeprom-name %s, rc %d\n", __func__,
-		eb_info->eeprom_name, rc);
+		eb_info->eeprom_name, rc); // fail
 	if (rc < 0) {
 		pr_err("%s failed %d\n", __func__, __LINE__);
 		e_ctrl->userspace_probe = 1;
@@ -1817,10 +1846,10 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 		}
 
 		rc = of_property_read_u32(of_node, "qcom,i2c-freq-mode",
-			&e_ctrl->i2c_freq_mode);
+			&e_ctrl->i2c_freq_mode); // read freq
 		CDBG("qcom,i2c_freq_mode %d, rc %d\n",
-			e_ctrl->i2c_freq_mode, rc);
-		if (rc < 0) {
+			e_ctrl->i2c_freq_mode, rc); 
+		if (rc < 0) { // freq-mode
 			pr_err("%s qcom,i2c-freq-mode read fail. Setting to 0 %d\n",
 				__func__, rc);
 			e_ctrl->i2c_freq_mode = 0;
@@ -1846,14 +1875,14 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 			pr_err("failed rc %d\n", rc);
 			goto memdata_free;
 		}
-		rc = read_eeprom_memory(e_ctrl, &e_ctrl->cal_data);
+		rc = read_eeprom_memory(e_ctrl, &e_ctrl->cal_data); // save in cal_data.mapdata
 		if (rc < 0) {
 			pr_err("%s read_eeprom_memory failed\n", __func__);
 			goto power_down;
 		}
 		for (j = 0; j < e_ctrl->cal_data.num_data; j++)
-			CDBG("memory_data[%d] = 0x%X\n", j,
-				e_ctrl->cal_data.mapdata[j]);
+			YA_INFO("memory_data[%d] = 0x%X\n", j, e_ctrl->cal_data.mapdata[j]);
+//			CDBG("memory_data[%d] = 0x%X\n", j, e_ctrl->cal_data.mapdata[j]);
 
 		e_ctrl->is_supported |= msm_eeprom_match_crc(&e_ctrl->cal_data);
 
