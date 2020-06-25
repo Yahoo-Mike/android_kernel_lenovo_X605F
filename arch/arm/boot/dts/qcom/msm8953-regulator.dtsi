@@ -230,9 +230,11 @@
 	rpm-regulator-ldoa11 {
 		status = "okay";
 		pm8953_l11: regulator-l11 {
+		//sunsiyuan@wind-mobi.com modify at 20180209 begin
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
 			qcom,init-voltage = <3300000>;
+		//sunsiyuan@wind-mobi.com modify at 20180209 end
 			status = "okay";
 		};
 	};

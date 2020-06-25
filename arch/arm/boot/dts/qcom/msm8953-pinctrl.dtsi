@@ -147,7 +147,7 @@
 			};
 		};
 		/*fengnan@wind-mobi.com add 20180308  end */
-
+		
 		/*sensors */
 		cam_sensor_mclk0_default: cam_sensor_mclk0_default {
 			/* MCLK0 */
@@ -464,6 +464,7 @@
 
 		};
 
+		/* caisijing@wind-mobi.com 20180202 modify start */
 		pmx_mdss: pmx_mdss {
 			mdss_dsi_active: mdss_dsi_active {
 				mux {
@@ -491,15 +492,16 @@
 					bias-pull-down; /* pull down */
 				};
 			};
+		/* caisijing@wind-mobi.com 20180202 modify end */
 
 			mdss_dsi_gpio: mdss_dsi_gpio {
 				mux {
-					/*pins = "gpio141"; */
+					pins = "gpio141";
 					function = "gpio";
 				};
- 
+
 				config {
-					/*pins = "gpio141";*/
+					pins = "gpio141";
 					drive-strength = <8>;
 					bias-pull-down;
 					output-low;
@@ -534,6 +536,7 @@
 			};
 		};
 
+		/* zhangchao@wind-mobi.com 20180313 begin */
 		hsuart_active: default {
 			mux {
 				/*pins = "gpio12", "gpio13", "gpio14", "gpio15";*/
@@ -559,7 +562,10 @@
 				bias-disable;
 			};
 		};
+		/* zhangchao@wind-mobi.com 20180313 end */
 
+		/* caisijing@wind-mobi.com 20180202 modify start */
+//sunjingtao@wind-mobi.com modify at 20180208 begin		
 		blsp2_uart0_active: blsp2_uart0_active {
 			mux {
 			/*	pins = "gpio16", "gpio17", "gpio18", "gpio19";*/
@@ -585,6 +591,8 @@
 				bias-disable;
 			};
 		};
+//sunjingtao@wind-mobi.com modify at 20180208 end		
+		/* caisijing@wind-mobi.com 20180202 modify end */
 
 		/* SDC pin type */
 		sdc1_clk_on: sdc1_clk_on {
@@ -845,7 +853,7 @@
 			};
 		};
 /*fengnan@wind-mobi.com add 20180308  end */
-
+		
 		pmx_rd_nfc_int {
 			/*qcom,pins = <&gp 17>;*/
 			pins = "gpio17";
@@ -1225,6 +1233,8 @@
 			};
 		};
 
+		//sunsiyuan@wind-mobi.com add at 20180207 begin
+		/*
 		pri-tlmm-lines {
 			pri_tlmm_lines_act: pri_tlmm_lines_act {
 				mux {
@@ -1251,7 +1261,10 @@
 				};
 			};
 		};
-
+		*/
+		//sunsiyuan@wind-mobi.com add at 20180207 end
+		//sunsiyuan@wind-mobi.com add at 20180207 begin
+		/*
 		pri-tlmm-ws-lines {
 			pri_tlmm_ws_act: pri_tlmm_ws_act {
 				mux {
@@ -1278,7 +1291,8 @@
 				};
 			};
 		};
-
+		*/
+		//sunsiyuan@wind-mobi.com add at 20180207 end
 		spi3 {
 			spi3_default: spi3_default {
 				/* active state */
@@ -1697,6 +1711,7 @@
 			};
 		};
 
+		/* zhangchao@wind-mobi.com 20180516 for OTG and POGO begin */
 		ssusb_mode_sel: ssusb_mode_sel {
 			mux {
 				/*pins = "gpio12";*/
@@ -1710,6 +1725,8 @@
 				input-enable;
 			};
 		};
+		/* zhangchao@wind-mobi.com 20180516 end */
+		/* zhangchao@wind-mobi.com 20180305 begin */
 		otg_flag_default: otg_flag_default {
 			mux {
 				pins = "gpio20";
@@ -1761,5 +1778,6 @@
 				output-low;
 			};
 		};
+		/* zhangchao@wind-mobi.com 20180305 end */
 	};
 };

@@ -24,14 +24,22 @@
 #include "dsi-panel-lt8912-480p-video.dtsi"
 #include "dsi-panel-lt8912-1080p-video.dtsi"
 #include "dsi-panel-lgd-incell-sw49106-fhd-video.dtsi"
+#include "dsi-panel-focaltech-1080p-video.dtsi"  //sunjingtao@wind-mobi.com add at 20180306
 #include "dsi-panel-hx83100a-800p-video.dtsi"
-#include "dsi-panel-inx-ft8201-1080p-video.dtsi"
-#include "dsi-panel-boe-ft8201-1080p-video.dtsi"
 
 &soc {
 	dsi_panel_pwr_supply: dsi_panel_pwr_supply {
 		#address-cells = <1>;
 		#size-cells = <0>;
+
+		qcom,panel-supply-entry@0 {
+			reg = <0>;
+			qcom,supply-name = "vdd";
+			qcom,supply-min-voltage = <2850000>;
+			qcom,supply-max-voltage = <2850000>;
+			qcom,supply-enable-load = <100000>;
+			qcom,supply-disable-load = <100>;
+		};
 
 		qcom,panel-supply-entry@1 {
 			reg = <1>;
@@ -44,6 +52,25 @@
 	};
 };
 
+//sunjingtao@wind-mobi.com add at 20180306 begin
+&dsi_focaltech_1080_vid {
+	qcom,mdss-dsi-panel-timings-phy-v2 = [24 1f 08 09 05 03 04 a0
+		24 1f 08 09 05 03 04 a0
+		24 1f 08 09 05 03 04 a0
+		24 1f 08 09 05 03 04 a0
+		24 1f 08 09 05 03 04 a0];
+};
+//sunjingtao@wind-mobi.com add at 20180306 end
+
+//sunjingtao@wind-mobi.com modify at 20180208 begin
+&dsi_truly_1080_vid {
+	qcom,mdss-dsi-panel-timings-phy-v2 = [25 1f 09 0a 06 03 04 a0
+		25 1f 09 0a 06 03 04 a0
+		25 1f 09 0a 06 03 04 a0
+		25 1f 09 0a 06 03 04 a0
+		25 1f 09 0a 06 03 04 a0];
+};
+//sunjingtao@wind-mobi.com modify at 20180208 end
 &dsi_truly_1080_cmd {
 	qcom,mdss-dsi-panel-timings-phy-v2 = [23 1e 08 09 05 03 04 a0
 		23 1e 08 09 05 03 04 a0

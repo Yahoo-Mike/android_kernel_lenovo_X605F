@@ -14,7 +14,9 @@
 &int_codec {
 	status = "okay";
 	qcom,model = "msm8953-snd-card-mtp";
+	//sunsiyuan@wind-mobi.com add at 20180207 begin
 	qcom,msm-hs-micbias-type = "external";
+	//sunsiyuan@wind-mobi.com add at 20180207 end
 };
 
 &pm8953_diangu_dig {

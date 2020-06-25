@@ -361,30 +361,27 @@
 			"quin_pri_i2s_act",
 			"quin_us_eu_gpio_act",
 			"quin_us_eu_gpio_pri_i2s_act";
+			
+		//sunsiyuan@wind-mobi.com add at 20180207 begin
+		
 		pinctrl-0 = <&cdc_pdm_lines_sus
-				&cdc_pdm_lines_2_sus &cross_conn_det_sus
-				&pri_tlmm_lines_sus &pri_tlmm_ws_sus>;
+				&cdc_pdm_lines_2_sus &cross_conn_det_sus>;
 		pinctrl-1 = <&cdc_pdm_lines_act
-				&cdc_pdm_lines_2_act &cross_conn_det_sus
-				&pri_tlmm_lines_sus &pri_tlmm_ws_sus>;
+				&cdc_pdm_lines_2_act &cross_conn_det_sus>;
 		pinctrl-2 = <&cdc_pdm_lines_sus
-				&cdc_pdm_lines_2_sus &cross_conn_det_act
-				&pri_tlmm_lines_sus &pri_tlmm_ws_sus>;
+				&cdc_pdm_lines_2_sus &cross_conn_det_act>;
 		pinctrl-3 = <&cdc_pdm_lines_act
-				&cdc_pdm_lines_2_act &cross_conn_det_act
-				&pri_tlmm_lines_sus &pri_tlmm_ws_sus>;
+				&cdc_pdm_lines_2_act &cross_conn_det_act>;
 		pinctrl-4 = <&cdc_pdm_lines_sus
-				&cdc_pdm_lines_2_sus &cross_conn_det_sus
-				&pri_tlmm_lines_act &pri_tlmm_ws_act>;
+				&cdc_pdm_lines_2_sus &cross_conn_det_sus>;
 		pinctrl-5 = <&cdc_pdm_lines_act
-				&cdc_pdm_lines_2_act &cross_conn_det_sus
-				&pri_tlmm_lines_act &pri_tlmm_ws_act>;
+				&cdc_pdm_lines_2_act &cross_conn_det_sus>;
 		pinctrl-6 = <&cdc_pdm_lines_sus
-				&cdc_pdm_lines_2_sus &cross_conn_det_act
-				&pri_tlmm_lines_act &pri_tlmm_ws_act>;
+				&cdc_pdm_lines_2_sus &cross_conn_det_act>;
 		pinctrl-7 = <&cdc_pdm_lines_act
-				&cdc_pdm_lines_2_act &cross_conn_det_act
-				&pri_tlmm_lines_act &pri_tlmm_ws_act>;
+				&cdc_pdm_lines_2_act &cross_conn_det_act>;
+				
+		//sunsiyuan@wind-mobi.com add at 20180207 end
 
 		asoc-platform = <&pcm0>, <&pcm1>, <&pcm2>, <&voip>, <&voice>,
 				<&loopback>, <&compress>, <&hostless>,
@@ -487,15 +484,16 @@
 			"quin_act",
 			"us_eu_gpio_act",
 			"quin_us_eu_gpio_act";
-		pinctrl-0 = <&pri_tlmm_lines_sus &pri_tlmm_ws_sus
-						&cross_conn_det_sus>;
-		pinctrl-1 = <&pri_tlmm_lines_act &pri_tlmm_ws_act
-						&cross_conn_det_sus>;
-		pinctrl-2 = <&pri_tlmm_lines_sus &pri_tlmm_ws_sus
-						&cross_conn_det_act>;
-		pinctrl-3 = <&pri_tlmm_lines_act &pri_tlmm_ws_act
-						&cross_conn_det_act>;
-
+			
+		//sunsiyuan@wind-mobi.com add at 20180207 begin
+		
+		pinctrl-0 = <&cross_conn_det_sus>;
+		pinctrl-1 = <&cross_conn_det_sus>;
+		pinctrl-2 = <&cross_conn_det_act>;
+		pinctrl-3 = <&cross_conn_det_act>;
+						
+		//sunsiyuan@wind-mobi.com add at 20180207 end
+		
 		qcom,msm-mbhc-hphl-swh = <0>;
 		qcom,msm-mbhc-gnd-swh = <0>;
 		qcom,tasha-mclk-clk-freq = <9600000>;

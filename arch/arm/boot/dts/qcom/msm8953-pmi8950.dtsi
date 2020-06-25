@@ -27,7 +27,9 @@
 };
 
 &usb3 {
+	/*zhangchao@wind-mobi.com 20180516 for OTG and POGO begin*/
 	/*vbus_dwc3-supply = <&smbcharger_charger_otg>;*/
+	/*zhangchao@wind-mobi.com 20180516 end*/
 };
 
 &mdss_dsi0 {

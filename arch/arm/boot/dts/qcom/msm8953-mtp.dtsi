@@ -13,7 +13,10 @@
 
 #include "msm8953-pinctrl.dtsi"
 #include "msm8953-audio-mtp.dtsi"
+/* caisijing@wind-mobi.com 20180308 start */
 #include "msm8953-fpc.dtsi"
+/* caisijing@wind-mobi.com 20180308 end */
+
 &spi_3 { /* BLSP1 QUP3 */
 	spi-max-frequency = <16000000>;
 	maxim_sti@0 {
@@ -41,7 +44,7 @@
 &i2c_5 { /* BLSP2 QUP0*/
 	Semtech_sx9310@28 {
 		compatible = "Semtech,sx9310";
-		reg = <0x28>;
+		reg = <0x28>;		
 		qcom,nq-irq = <&tlmm 131 0x00>;
 		interrupt-parent = <&tlmm>;
 		interrupts = <131 0>;
@@ -58,7 +61,7 @@
                                 0x16 0x20
                                 0x17 0x4C
                                 0x18 0x7E
-                                0x19 0x7D
+                                0x19 0x7D 
                                 0x1A 0x00
                                 0x1B 0x00
                                 0x1C 0x00
@@ -78,7 +81,7 @@
 	};
 	abov_t316@20 {
 		compatible = "abov,sxT316";
-		reg = <0x20>;
+		reg = <0x20>;		
 		qcom,nq-irq = <&tlmm 131 0x08>;
 		interrupt-parent = <&tlmm>;
 		interrupts = <131 0x08>;
@@ -150,26 +153,25 @@
                                 0x08 0x00
                                 0x11 0x24>;
 	};
-	abov_t316@20 {
-		compatible = "abov,LTE-T316";
-		reg = <0x20>;
-		qcom,nq-irq = <&tlmm 97 0x08>;
-		interrupt-parent = <&tlmm>;
-		interrupts = <97 0x08>;
-		interrupt-names = "abov_irq";
-		pinctrl-names = "nirq_gpio2";
-		pinctrl-0 = <&nirq_gpio_default2>;
-		above,irq-gpio = <&tlmm 97 0x08>;
-	};
 };
 /* fengnan@wind-mobi.com add 20180614 end */
+
+
+/*zhangchao@wind-mobi.com 20180226 begin*/
 &i2c_2 { /* mm8013 fg */
 	bq27426@55 {
-		compatible = "ti,bq27x00";
+		compatible = "ti,bq27426";
 		reg = <0x55>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&otg_flag_default &pogo_flag_default>;
+		
+		ti,otg_flag = <&tlmm 20 0>;
+		ti,pogo_en = <&tlmm 45 0>;
 	};
 };
+/*zhangchao@wind-mobi.com 20180226 end*/
 
+/* caisijing@wind-mobi.com 20180201 add start */
 &i2c_3 {
 	focaltech@38{
 		compatible = "focaltech,fts";
@@ -196,6 +198,7 @@ sunjingtao@wind-mobi.com modify at 20180511 end
 */
 	};
 };
+/* caisijing@wind-mobi.com 20180201 add end */
 
 &pm8953_l10 {
 	regulator-max-microvolt = <2850000>;
@@ -233,7 +236,20 @@ sunjingtao@wind-mobi.com modify at 20180511 end
 			debounce-interval = <15>;
 		};
 	};
-
+	/* fengnan@wind-mobi.com add 20180207 begin */
+	hall {
+		compatible = "hall-switch";
+		pinctrl-names = "default";
+		pinctrl-0 = <&hall_sensor_int_default>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <44 0x2003>;
+		vddio-supply = <&pm8953_l5>;
+		linux,gpio-int = <&tlmm 44 0x1>;
+		linux,wakeup;
+		linux,min-uv = <1650000>;
+		linux,max-uv = <3300000>;
+	}; 
+	/* fengnan@wind-mobi.com add 20180207 end */
 	hbtp {
 		compatible = "qcom,hbtp-input";
 		vcc_ana-supply = <&pm8953_l10>;
@@ -245,10 +261,16 @@ sunjingtao@wind-mobi.com modify at 20180511 end
 		qcom,dig-vtg-min = <1800000>;
 		qcom,dig-vtg-max = <1800000>;
 	};
+//sunjingtao@wind-mobi.com add for hardware info at 20180312 begin
+	HardwareInfo: HardwareInfo {
+		compatible = "qcom,hardware_info";
+		status = "ok";
+	 };
+//sunjingtao@wind-mobi.com add for hardware info at 20180312 end
 };
 
 &pmi_haptic{
-	qcom,actuator-type = "erm";
+	qcom,actuator-type = "erm";  //sunjingtao@wind-mobi.com modify at 20180329
 	qcom,lra-auto-res-mode="qwd";
 	qcom,lra-high-z="opt1";
 	qcom,lra-res-cal-period = <0>;
@@ -276,14 +298,16 @@ sunjingtao@wind-mobi.com modify at 20180511 end
 };
 
 &mdss_dsi0 {
-	qcom,dsi-pref-prim-pan = <&dsi_boe_ft8201_1080_vid>;
+	qcom,dsi-pref-prim-pan = <&dsi_truly_1080_vid>;
 	pinctrl-names = "mdss_default", "mdss_sleep";
 	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
 	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
 
 	qcom,platform-te-gpio = <&tlmm 24 0>;
 	qcom,platform-reset-gpio = <&tlmm 61 0>;
+	/* caisijing@wind-mobi.com 20180202 modify start */
 	qcom,platform-bklight-en-gpio = <&tlmm 16 0>;
+	/* caisijing@wind-mobi.com 20180202 modify start */
 };
 
 &mdss_dsi1 {
@@ -299,17 +323,19 @@ sunjingtao@wind-mobi.com modify at 20180511 end
 	qcom,platform-bklight-en-gpio = <&tlmm 59 0>;
 };
 
-&dsi_boe_ft8201_1080_vid {
+&dsi_truly_1080_vid {
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
-	//qcom,mdss-dsi-pan-enable-dynamic-fps;
+	//qcom,mdss-dsi-pan-enable-dynamic-fps;  //sunjingtao@wind-mobi.com modify at 20180208
 	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_clk_mode";
 };
 
-&dsi_inx_ft8201_1080_vid {
+//sunjingtao@wind-mobi.com add at 20180306 begin
+&dsi_focaltech_1080_vid {
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
-	//qcom,mdss-dsi-pan-enable-dynamic-fps;
+	//qcom,mdss-dsi-pan-enable-dynamic-fps;  //sunjingtao@wind-mobi.com modify at 20180208
 	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_clk_mode";
 };
+//sunjingtao@wind-mobi.com add at 20180306 end
 
 &dsi_truly_1080_cmd {
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
@@ -364,7 +390,9 @@ sunjingtao@wind-mobi.com modify at 20180511 end
 &sdhc_2 {
 	/* device core power supply */
 	vdd-supply = <&pm8953_l11>;
+	//sunsiyuan@wind-mobi.com modify at 20180209 begin
 	qcom,vdd-voltage-level = <3300000 3300000>;
+	//sunsiyuan@wind-mobi.com modify at 20180209 end
 	qcom,vdd-current-level = <15000 800000>;
 
 	/* device communication power supply */
@@ -385,7 +413,9 @@ sunjingtao@wind-mobi.com modify at 20180511 end
 		1 &intc 0 221 0
 		2 &tlmm 133 0>;
 	interrupt-names = "hc_irq", "pwr_irq", "status_irq";
+	//sunsiyuan@wind-mobi.com modify at 20180209 begin
 	cd-gpios = <&tlmm 133 0x4>;
+	//sunsiyuan@wind-mobi.com modify at 20180209 end
 
 	qcom,clk-rates = <400000 20000000 25000000 50000000 100000000
 								200000000>;

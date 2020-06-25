@@ -180,7 +180,9 @@
 			mpp@a100 {
 				reg = <0xa100 0x100>;
 				qcom,pin-num = <2>;
+				/*huyunge@wind-mobi.com 20180228 begin*/
 				status = "okay";
+				/*huyunge@wind-mobi.com 20180228 end*/
 			};
 
 			mpp@a200 {
@@ -203,24 +205,30 @@
 			#size-cells = <1>;
 
 			qcom,iterm-ma = <100>;
-			qcom,float-voltage-mv = <4400>;
+			qcom,float-voltage-mv = <4400>;                  /*zhangchao@wind-mobi.com modify 20180307*/
 			qcom,resume-delta-mv = <200>;
 			qcom,chg-inhibit-fg;
 			qcom,rparasitic-uohm = <100000>;
 			qcom,bms-psy-name = "bms";
 			qcom,thermal-mitigation = <1500 700 600 0>;
-			/*qcom,parallel-usb-min-current-ma = <1400>;*/
-			/*qcom,parallel-usb-9v-min-current-ma = <900>;*/
-			/*qcom,parallel-allowed-lowering-ma = <500>;*/
+			/*zhangchao@wind-mobi.com 20180307 begin*/
 			qcom,dc-psy-type = "Mains";
 			qcom,dc-psy-ma = <1500>;
 			qcom,fastchg-current-ma = <2400>;
-
+			/*qcom,parallel-usb-min-current-ma = <1400>;*/
+			/*qcom,parallel-usb-9v-min-current-ma = <900>;*/
+			/*qcom,parallel-allowed-lowering-ma = <500>;*/
+			/*zhangchao@wind-mobi.com 20180307 end*/
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,force-aicl-rerun;
 			qcom,aicl-rerun-period-s = <180>;
 			qcom,autoadjust-vfloat;
+			/*wangpengpeng@wind-mobi.com 20180511 begin*/
 			qcom,jeita-temp-hard-limit = <0>;
+			/*wangpengpeng@wind-mobi.com 20180511 end*/
+			/*zhangchao@wind-mobi.com 20180212 begin*/
+			/*qcom,charge-unknown-battery;*/
+			/*zhangchao@wind-mobi.com 20180212 end*/
 
 			qcom,chgr@1000 {
 				reg = <0x1000 0x100>;
@@ -322,14 +330,17 @@
 			compatible = "qcom,qpnp-fg";
 			#address-cells = <1>;
 			#size-cells = <1>;
-			qcom,resume-soc = <99>;
+			qcom,resume-soc = <99>;                            /*zhangchao@wind-mobi.com modify 20180703*/
 			status = "okay";
 			qcom,bcl-lm-threshold-ma = <127>;
 			qcom,bcl-mh-threshold-ma = <405>;
+			/*zhangchao@wind-mobi.com 20180417 begin*/
 			qcom,fg-iterm-ma = <250>;
 			qcom,fg-chg-iterm-ma = <200>;
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,fg-cutoff-voltage-mv = <3400>;
+			qcom,hold-soc-while-full;
+			/*zhangchao@wind-mobi.com 20180417 begin*/
 			qcom,cycle-counter-en;
 			qcom,capacity-learning-on;
 
@@ -413,6 +424,7 @@
 		qcom,leds@a100 {
 			compatible = "qcom,leds-qpnp";
 			reg = <0xa100 0x100>;
+			/*zhangchao@wind-mobi.com 20180323 begin*/
 			status = "okay";
 			qcom,led_mpp_2 {
 				label = "mpp";
@@ -427,8 +439,9 @@
 				qcom,mode-ctrl = <0x60>;
 				pwms = <&pmi8950_pwm 0 0>;
 				qcom,pwm-us = <2300000>;
-            		};		
             	};
+			/*zhangchao@wind-mobi.com 20180323 end*/
+		};
 	};
 
 	qcom,pmi8950@3 {
@@ -437,6 +450,7 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 
+		/*zhangchao@wind-mobi.com 20180323 begin*/
 		pmi8950_pwm: pwm@b000 {
 			status = "okay";
 			compatible = "qcom,qpnp-pwm";
@@ -453,6 +467,7 @@
 				label = "pwm";
 			};
 		};
+		/*zhangchao@wind-mobi.com 20180323 end*/
 
 		labibb: qpnp-labibb-regulator {
 			status = "disabled";
@@ -555,6 +570,7 @@
 			qcom,sync-dly-us = <800>;
 			qcom,fs-curr-ua = <20000>;
 			qcom,led-strings-list = [00 01];
+			qcom,en-ext-pfet-sc-pro;
 			qcom,cons-sync-write-delay-us = <1000>;
 		};
 
@@ -589,7 +605,9 @@
 				qcom,max-current = <1000>;
 				qcom,duration = <1280>;
 				qcom,id = <0>;
-				qcom,current = <625>;
+		/*		wangzhancai@wind-mobi.com  20180409 modify start */
+				qcom,current = <950>;
+		/*		wangzhancai@wind-mobi.com  20180409 modify end */
 			};
 
 			pmi8950_flash1: qcom,flash_1 {
@@ -610,7 +628,9 @@
 						"torch0_trigger";
 				qcom,max-current = <200>;
 				qcom,id = <0>;
-				qcom,current = <120>;
+		/*		wangzhancai@wind-mobi.com  20180409 modify start */
+				qcom,current = <200>;
+		/*		wangzhancai@wind-mobi.com  20180409 modify end */
 			};
 
 			pmi8950_torch1: qcom,torch_1 {
@@ -650,7 +670,7 @@
 			qcom,wave-play-rate-us = <5263>;
 			qcom,actuator-type = "erm";
 			qcom,wave-shape = "square";
-			qcom,vmax-mv = <2800>;
+			qcom,vmax-mv = <2800>;  //sunjingtao@wind-mobi.com modify at 20180329
 			qcom,ilim-ma = <800>;
 			qcom,sc-deb-cycles = <8>;
 			qcom,int-pwm-freq-khz = <505>;
