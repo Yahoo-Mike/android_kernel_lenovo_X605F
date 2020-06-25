@@ -7,9 +7,8 @@ CONFIG_MODULE_SIG_ALL=y
 
 #
 # Qualcomm Atheros Pronto WLAN module (wlan.ko)
-# (in drivers/staging/prima - for a LOS compile)
 #
-CONFIG_PRONTO_WLAN=m
+CONFIG_PRONTO_WLAN=y
 # from Kconfig...
 # CONFIG_PRIMA_WLAN_BTAMP is not set
 CONFIG_PRIMA_WLAN_LFR=y

@@ -14,7 +14,7 @@ To compile the kernel:
 
 	export PATH=$PWD/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/:$PATH
 	rm -rf out/
-	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- O=out m10_lineageos_defconfig
+	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- O=out lineageos_tbx605_defconfig
 	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- O=out headers_install
 	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- O=out -j8
 
