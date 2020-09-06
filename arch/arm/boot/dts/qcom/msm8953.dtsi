@@ -22,9 +22,14 @@
 	qcom,msm-id = <293 0x0>;
 	interrupt-parent = <&intc>;
 
+	/* YM 6/9/2020: added ramoops.* to kernel commandline */
 	chosen {
-		bootargs = "sched_enable_hmp=1 sched_enable_power_aware=1";
-	};
+		bootargs = "sched_enable_hmp=1 sched_enable_power_aware=1 \
+                            ramoops.mem_address=0x83300000 \
+                            ramoops.mem_size=0x800000 \
+                            ramoops.ecc=1 \
+                            ramoops.console_size=0x20000"; 
+	}; 
 
 	firmware: firmware {
 		android {
@@ -55,6 +60,14 @@
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
+
+
+		/* YM 5/9/2020: reserve exclusive 8MB memory region for pstore/ramoops */
+		pstore_reserve_mem: pstore_reserve_mem_region@0 {
+			compatible = "removed-dma-pool";
+			no-map;
+			reg = <0x0 0x83300000 0x0 0x800000>;
+		};
 
         /* extend ta memory size to 40M sunsiyuan@wind-mobi.com 20180621 modify start */
 		other_ext_mem: other_ext_region@0 {
